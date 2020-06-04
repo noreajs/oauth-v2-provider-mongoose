@@ -5,6 +5,14 @@ export {
   OauthExpiresInType,
   SubLookupFuncType,
 } from "./module/interfaces/IOauthContext";
+export {
+  IJwtTokenPayload,
+  JwtTokenReservedClaimsType,
+  JwtTokenAddressClaimType,
+  JwtTokenReservedClaimType,
+  JwtTokenStandardClaimType,
+} from "./module/interfaces/IJwt";
+export { default as IEndUserAuthData } from "./module/interfaces/IEndUserAuthData";
 
 /**
  * Models exports
