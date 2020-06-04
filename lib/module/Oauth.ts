@@ -8,30 +8,32 @@ import { IJwtTokenPayload } from "./interfaces/IJwt";
 import OauthAccessToken from "./models/OauthAccessToken";
 import { HttpStatus, replaceAllMatch } from "@noreajs/common";
 
-class Oauth {
-  static context?: OauthContext;
+export default class Oauth {
+  private static instance: Oauth;
+  context: OauthContext;
   app: Application;
 
-  constructor(app: Application) {
+  private constructor(app: Application, context: OauthContext) {
+    // express app
     this.app = app;
+    // oauth provider context
+    this.context = context;
+    // initialize oauth instance
+    this.initialize();
   }
 
   /**
-   * Initialize oauth 2 module
-   * @param context oauth 2 context
+   * Initialize oauth instance
    */
-  init(initContext: IOauthContext) {
-    // create context
-    Oauth.context = new OauthContext(initContext);
-
+  private initialize() {
     // set session
     this.app.use(
       session({
-        secret: Oauth.context.secretKey,
+        secret: this.context.secretKey,
         resave: false,
         saveUninitialized: true,
         name: `${replaceAllMatch(
-          Oauth.context.providerName.toLocaleLowerCase(),
+          this.context.providerName.toLocaleLowerCase(),
           /\s/g,
           "-"
         )}.sid`,
@@ -47,14 +49,37 @@ class Oauth {
     this.app.set("view engine", "ejs");
 
     // Add oauth routes
-    oauthRoutes(this.app, Oauth.context);
+    oauthRoutes(this.app, this.context);
   }
 
+  /**
+   * Get oauth instance
+   */
+  public static getInstance(): Oauth {
+    return Oauth.instance;
+  }
+
+  /**
+   * Initialize oauth 2 module
+   * @param context oauth 2 context
+   */
+  static init(app: Application, initContext: IOauthContext) {
+    // create context
+    Oauth.instance = new Oauth(app, new OauthContext(initContext));
+  }
+
+  /**
+   * Validate user access token
+   * @param scope scope needed - Optional
+   */
   static authorize(scope?: string) {
-    if (Oauth.context) {
-      // get oauth context
-      const oauthContext = Oauth.context;
-      return async (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
+      // get auth instance
+      const oauth = Oauth.getInstance();
+      // check instance existance
+      if (oauth) {
+        // get oauth context
+        const oauthContext = oauth.context;
         // authorization server
         const authorization =
           req.headers["authorization"] ?? req.headers["proxy-authorization"];
@@ -95,9 +120,12 @@ class Oauth {
                         });
                       }
                     }
-                    
+
                     // lookup sub for other grant but client_credentials
-                    if (accessToken.grant !== "client_credentials" && oauthContext.subLookup) {
+                    if (
+                      accessToken.grant !== "client_credentials" &&
+                      oauthContext.subLookup
+                    ) {
                       res.locals.user = await oauthContext.subLookup(
                         accessToken.userId
                       );
@@ -130,16 +158,11 @@ class Oauth {
             message: `Authorization Header Required`,
           });
         }
-      };
-    } else {
-      return async (req: Request, res: Response, next: NextFunction) => {
+      } else {
         console.warn(
           "The Oauth.context static property is not defined. Make sure you have initialized the Oauth package as described in the documentation."
         );
-        next();
-      };
-    }
+      }
+    };
   }
 }
-
-export default Oauth;

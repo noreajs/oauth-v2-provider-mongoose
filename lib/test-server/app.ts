@@ -14,7 +14,7 @@ const app = new NoreaApp(apiRoutes, {
       connectionUrl: `mongodb://127.0.0.1:27017/your-api-database?replicaSet=rs0`,
       onConnect: (connection) => {
         // Mongoose oauth 2  provider initialization
-        new Oauth(app).init({
+        Oauth.init(app, {
           providerName: "Oauth 2 Provider",
           secretKey:
             "66a5ddac054bfe9389e82dea96c85c2084d4b011c3d33e0681a7488756a00ca334a1468015da8",
@@ -58,13 +58,11 @@ const app = new NoreaApp(apiRoutes, {
           subLookup: async (sub: string) => {
             return await User.findById(sub);
           },
-          securityMiddlewares: [
-            Oauth.authorize()
-          ]
+          securityMiddlewares: [Oauth.authorize()],
         });
       },
     });
-  }
+  },
 });
 
 app.start();
