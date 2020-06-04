@@ -1,6 +1,6 @@
 {
   "name": "@noreajs/oauth-v2-provider-mongoose",
-  "version": "0.0.1-0",
+  "version": "0.0.1-1",
   "description": "Oauth 2 Provider using a MongoDB database and Express",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
