@@ -8,9 +8,10 @@ import TokenGrantClientCredentialsHelper from "../helpers/TokenGrantClientCreden
 import TokenGrantPasswordCredentialsHelper from "../helpers/TokenGrantPasswordCredentialsHelper";
 import TokenGrantRefreshTokenHelper from "../helpers/TokenGrantRefreshTokenHelper";
 import OauthController from "./oauth.controller";
+import OauthAccessToken from "../models/OauthAccessToken";
+import OauthAuthCode from "../models/OauthAuthCode";
 
-class AccessTokenController extends OauthController{
-
+class AccessTokenController extends OauthController {
   /**
    * Generate token
    * @param req request
@@ -154,19 +155,14 @@ class AccessTokenController extends OauthController{
    * @param res response
    */
   async purge(req: Request, res: Response) {
-    return res.status(HttpStatus.Ok).json({
-      message: "Purge",
-    });
-  }
+    // remove all revoked access token
+    await OauthAccessToken.remove({ revokedAt: { $exists: true } });
 
-  /**
-   * Get information about a token
-   * @param req request
-   * @param res response
-   */
-  async inspect(req: Request, res: Response) {
+    // remove all revoked authorization code
+    await OauthAuthCode.remove({ revokedAt: { $exists: true } });
+
     return res.status(HttpStatus.Ok).json({
-      message: "Inspect token",
+      message: "Purge Ok",
     });
   }
 }

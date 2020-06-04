@@ -11,6 +11,11 @@ export default (module: Router, oauthContext: OauthContext) => {
     mergeParams: true,
   });
 
+  // apply security middlewares
+  if(oauthContext.securityMiddlewares){
+    clientModule.use(oauthContext.securityMiddlewares)
+  }
+
   /**
    * Get all clients
    */

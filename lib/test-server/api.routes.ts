@@ -1,12 +1,13 @@
-import { NoreaAppRoutes, express } from "@noreajs/core";
+import { NoreaAppRoutes } from "@noreajs/core";
 import authRoutes from "./routes/auth.routes";
+import { Application } from "express";
 
 export default new NoreaAppRoutes({
-  routes: (app: express.Application) => {
+  routes: (app: Application) => {
     /**
      * Auth routes
      */
     authRoutes(app);
   },
-  middlewares: (app: express.Application) => {},
+  middlewares: (app: Application) => {},
 });

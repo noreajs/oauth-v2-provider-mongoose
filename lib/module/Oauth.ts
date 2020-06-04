@@ -95,9 +95,9 @@ class Oauth {
                         });
                       }
                     }
-
-                    // lookup sub
-                    if (oauthContext.subLookup) {
+                    
+                    // lookup sub for other grant but client_credentials
+                    if (accessToken.grant !== "client_credentials" && oauthContext.subLookup) {
                       res.locals.user = await oauthContext.subLookup(
                         accessToken.userId
                       );

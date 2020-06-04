@@ -1,6 +1,7 @@
 import { OauthExpiresInType, IOauthContext, SubLookupFuncType } from "./interfaces/IOauthContext";
 import IEndUserAuthData from "./interfaces/IEndUserAuthData";
 import { JwtTokenReservedClaimsType } from "./interfaces/IJwt";
+import { RequestHandler } from "express";
 
 export default class OauthContext {
   providerName: string;
@@ -26,6 +27,7 @@ export default class OauthContext {
     | JwtTokenReservedClaimsType
     | undefined;
   subLookup?: SubLookupFuncType;
+  securityMiddlewares?: RequestHandler[];
   tokenType: "Bearer";
   authorizationCodeLifeTime: number;
   accessTokenExpiresIn: OauthExpiresInType;
@@ -47,6 +49,7 @@ export default class OauthContext {
     };
     this.authenticationLogic = init.authenticationLogic;
     this.supportedOpenIdStandardClaims = init.supportedOpenIdStandardClaims;
+    this.securityMiddlewares = init.securityMiddlewares;
     this.authorizationCodeLifeTime = init.authorizationCodeLifeTime ?? 60 * 5;
     this.jwtAlgorithm = init.jwtAlgorithm ?? "HS512";
     this.providerName = init.providerName;

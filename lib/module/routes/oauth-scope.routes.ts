@@ -11,6 +11,11 @@ export default (module: Router, oauthContext: OauthContext) => {
     mergeParams: true,
   });
 
+  // apply security middlewares
+  if(oauthContext.securityMiddlewares){
+    scopeModule.use(oauthContext.securityMiddlewares)
+  }
+
   /**
    * Get all scopes
    */

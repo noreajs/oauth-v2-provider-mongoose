@@ -1,9 +1,6 @@
 import { NoreaApp } from "@noreajs/core";
 import apiRoutes from "./api.routes";
 import { Application } from "express";
-import bodyParser from "body-parser";
-import http from "http";
-import https from "https";
 import { MongoDBContext } from "@noreajs/mongoose";
 import Oauth from "../module/Oauth";
 import IEndUserAuthData from "../module/interfaces/IEndUserAuthData";
@@ -12,10 +9,6 @@ import User from "./models/User";
 
 const app = new NoreaApp(apiRoutes, {
   beforeStart: (app: Application) => {
-    // support application/json type post data
-    // app.use(bodyParser.json());
-    //support application/x-www-form-urlencoded post data
-    app.use(bodyParser.urlencoded({ extended: false }));
     // Get MongoDB Instance
     MongoDBContext.init({
       connectionUrl: `mongodb://127.0.0.1:27017/your-api-database?replicaSet=rs0`,
@@ -23,7 +16,6 @@ const app = new NoreaApp(apiRoutes, {
         // Mongoose oauth 2  provider initialization
         new Oauth(app).init({
           providerName: "Oauth 2 Provider",
-          jwtAlgorithm: "HS512",
           secretKey:
             "66a5ddac054bfe9389e82dea96c85c2084d4b011c3d33e0681a7488756a00ca334a1468015da8",
           authenticationLogic: async function (
@@ -66,14 +58,13 @@ const app = new NoreaApp(apiRoutes, {
           subLookup: async (sub: string) => {
             return await User.findById(sub);
           },
+          securityMiddlewares: [
+            Oauth.authorize()
+          ]
         });
       },
     });
-  },
-  afterStart: (app: Application, server: http.Server | https.Server, port: number) => {
-
-  },
-  forceHttps: false,
+  }
 });
 
 app.start();
