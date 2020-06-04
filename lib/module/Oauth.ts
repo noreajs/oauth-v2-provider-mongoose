@@ -108,6 +108,16 @@ export default class Oauth {
                     message: "Access Token not approved",
                   });
                 } else {
+                  // lookup sub for other grant but client_credentials
+                  if (
+                    accessToken.grant !== "client_credentials" &&
+                    oauthContext.subLookup
+                  ) {
+                    res.locals.user = await oauthContext.subLookup(
+                      accessToken.userId
+                    );
+                  }
+
                   // scope validation if exist
                   if (scope) {
                     const tokenScope = tokenData.scope ?? accessToken.scope;
@@ -119,16 +129,6 @@ export default class Oauth {
                           message: "Insufficient scope",
                         });
                       }
-                    }
-
-                    // lookup sub for other grant but client_credentials
-                    if (
-                      accessToken.grant !== "client_credentials" &&
-                      oauthContext.subLookup
-                    ) {
-                      res.locals.user = await oauthContext.subLookup(
-                        accessToken.userId
-                      );
                     }
 
                     // the user can access to the resource
@@ -162,6 +162,8 @@ export default class Oauth {
         console.warn(
           "The Oauth.context static property is not defined. Make sure you have initialized the Oauth package as described in the documentation."
         );
+        // the user can access to the resource
+        next();
       }
     };
   }
