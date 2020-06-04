@@ -1,4 +1,8 @@
-import { OauthExpiresInType, IOauthContext, SubLookupFuncType } from "./interfaces/IOauthContext";
+import {
+  OauthExpiresInType,
+  IOauthContext,
+  SubLookupFuncType,
+} from "./interfaces/IOauthContext";
 import IEndUserAuthData from "./interfaces/IEndUserAuthData";
 import { JwtTokenReservedClaimsType } from "./interfaces/IJwt";
 import { RequestHandler } from "express";
@@ -49,6 +53,7 @@ export default class OauthContext {
     };
     this.authenticationLogic = init.authenticationLogic;
     this.supportedOpenIdStandardClaims = init.supportedOpenIdStandardClaims;
+    this.subLookup = init.subLookup;
     this.securityMiddlewares = init.securityMiddlewares;
     this.authorizationCodeLifeTime = init.authorizationCodeLifeTime ?? 60 * 5;
     this.jwtAlgorithm = init.jwtAlgorithm ?? "HS512";

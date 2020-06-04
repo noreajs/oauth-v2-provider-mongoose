@@ -162,7 +162,7 @@ class TokenGrantRefreshTokenHelper {
          * ******************************
          */
         const tokens = await client.newAccessToken({
-          grant: "refresh_token",
+          grant: oauthRefreshToken.accessToken.grant,
           oauthContext: oauthContext,
           req: req,
           scope: newAccessTokenScope,
