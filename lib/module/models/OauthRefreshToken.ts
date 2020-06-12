@@ -1,9 +1,8 @@
-import { mongooseModel, Document, Schema } from "@noreajs/mongoose";
+import { mongooseModel } from "@noreajs/mongoose";
+import { Document, Schema } from "mongoose";
 import { IOauthAccessToken } from "./OauthAccessToken";
 
-export interface IOauthRefreshTokenAttempt {
-  
-}
+export interface IOauthRefreshTokenAttempt {}
 
 export interface IOauthRefreshToken extends Document {
   accessToken: IOauthAccessToken;

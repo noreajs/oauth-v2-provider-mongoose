@@ -1,5 +1,6 @@
 import { IOauthClient } from "./OauthClient";
-import { mongooseModel, Document, Schema } from "@noreajs/mongoose";
+import { mongooseModel } from "@noreajs/mongoose";
+import { Schema, Document } from "mongoose";
 import validator from "validator";
 import { IAuthorizationResponseType } from "../interfaces/IAuthCodeRequest";
 

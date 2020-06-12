@@ -1,9 +1,5 @@
-import {
-  mongooseModel,
-  Document,
-  Schema,
-  HookNextFunction,
-} from "@noreajs/mongoose";
+import { mongooseModel } from "@noreajs/mongoose";
+import { Document, Schema, HookNextFunction } from "mongoose";
 import validator from "validator";
 import OauthAccessToken, { IOauthAccessToken } from "./OauthAccessToken";
 import { Request } from "express";
@@ -55,10 +51,7 @@ export interface IOauthClient extends Document {
   accessTokenExpiresIn: (oauthContext: OauthContext) => number;
   refreshTokenExpiresIn: (oauthContext: OauthContext) => number;
   newAccessToken: (params: NewAccessTokenParamsType) => Promise<OauthTokenType>;
-  mergedScope: (
-    subjectScope: string,
-    requestScope?: string
-  ) => string;
+  mergedScope: (subjectScope: string, requestScope?: string) => string;
 }
 
 export default mongooseModel<IOauthClient>({

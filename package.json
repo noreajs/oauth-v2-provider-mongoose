@@ -14,7 +14,7 @@
     "start": "tsc && node dist/test-server/app.js",
     "test": "echo \"No test specified\"",
     "prestart": "npm run copy:assets",
-    "prepare": "npm run copy:assets",
+    "prepare": "tsc && npm run copy:assets",
     "copy:assets": "copyfiles -a -u 2 lib/module/**/*.ejs dist/module"
   },
   "repository": {
@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@noreajs/common": "^1.0.1-0",
-    "@noreajs/mongoose": "0.0.15-0",
+    "@noreajs/mongoose": "0.0.18",
     "@types/express": "^4.17.6",
     "@types/express-session": "^1.17.0",
     "@types/jsonwebtoken": "^8.5.0",
@@ -53,6 +53,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.26.0",
     "rand-token": "^1.0.1",
     "serialize-error": "^7.0.1",
     "uuid": "^8.1.0",
