@@ -113,42 +113,12 @@ Oauth.init(app, {
     "66a5ddac054bfe9389e82dea96c85c2084d4b011c3d33e0681a7488756a00ca334a1468015da8",
   authenticationLogic: async function (username: string, password: string) {
     // Your authentication logic here
-    //
-    // if success, return an object of IEndUserAuthData type
-    //  const data: IEndUserAuthData = {
-    //      scope: "*",
-    //      userId: user._id,
-    //      extraData: {
-    //          user: user,
-    //     },
-    // };
-    // return data;
-    //
-    // if failed, return undefined
   },
   supportedOpenIdStandardClaims: async function (userId: string) {
     // Return supported Open ID standard claims
-    //
-    // Example
-    //
-	//    const user = await User.findById(userId);
-	//    if (user) {
-	//    	return {
-	//    		name: user.username,
-	//    		email: user.email,
-	//    		email_verified:
-	//    		user.emailVerifiedAt !== undefined && user.emailVerifiedAt !== null,
-	//    		updated_at: user.updatedAt.getTime(),
-	//    	} as JwtTokenReservedClaimsType;
-	//    } else {
-	//    	return undefined;
-	//    }
   },
   subLookup: async (sub: string) => {
   	// returns the user who has an identifier equal to sub
-    //
-    // Example
-  	// return await User.findById(sub);
   },
   securityMiddlewares: [
       // Oauth.authorize() - Add this middleware only on production mode
@@ -813,4 +783,4 @@ import { /* model_name*/ } from "@noreajs/oauth-v2-provider-mongoose"
 
 
 
-## Consuming Your API With JavaScript (with [axios](https://github.com/axios/axios))
+## Consuming Your API With JavaScript ([axios](https://github.com/axios/axios))
