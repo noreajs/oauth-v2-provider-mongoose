@@ -52,9 +52,9 @@ The **IOauthContext** is an object with some properties useful for the provider 
 | providerName                  | string                                                       | false    | Oauth v2 provider name. This name is going to be used as cookie name. |
 | secretKey                     | string                                                       | false    | Oauth v2 provider secret key                                 |
 | jwtAlgorithm                  | "HS256", "HS384", "HS512", "RS256", "RS384", "RS512", "ES256", "ES384", "ES512" | true     | Jwt encrypt algorithm                                        |
-| authenticationLogic           | Function                                                     | false    | Function which take username and password as parameters and authenticate related user. |
-| supportedOpenIdStandardClaims | Function                                                     | false    | Function that return claims to be included in id_token       |
-| subLookup                     | Function                                                     | true     | Lookup the token owner and make his data available in Express response within the locals property. |
+| authenticationLogic           | Function                                                     | false    | Function which take username and password as parameters and authenticate related user. Response can be an object of type `IEndUserAuthData` or `undefined` |
+| supportedOpenIdStandardClaims | Function                                                     | false    | Function that return claims to be included in id_token. Response can be an object of type `JwtTokenReservedClaimsType` or `undefined` |
+| subLookup                     | Function                                                     | true     | Lookup the token owner and make his data available in Express response within the `locals` property or **express Response** |
 | securityMiddlewares           | array                                                        | true     | Middlewares to be applied to Clients management routes and Scopes management routes |
 | tokenType                     | "Bearer"                                                     | true     | Token type will be always Bearer                             |
 | authorizationCodeLifeTime     | object                                                       | true     | Authorization code lifetime in seconds                       |
@@ -99,7 +99,7 @@ Oauth context default values:
 
 
 
-Initialization example
+Initialization with common Node.js + Express example
 
 ```typescript
 import express from "express";
@@ -108,26 +108,25 @@ import { Oauth, IEndUserAuthData, JwtTokenReservedClaimsType } from "@noreajs/oa
 const app = express();
 
 Oauth.init(app, {
-  providerName: "Your App Name",
-  secretKey:
-    "66a5ddac054bfe9389e82dea96c85c2084d4b011c3d33e0681a7488756a00ca334a1468015da8",
-  authenticationLogic: async function (username: string, password: string) {
-    // Your authentication logic here
-  },
-  supportedOpenIdStandardClaims: async function (userId: string) {
-    // Return supported Open ID standard claims
-  },
-  subLookup: async (sub: string) => {
-  	// returns the user who has an identifier equal to sub
-  },
-  securityMiddlewares: [
+    providerName: "Your App Name",
+    secretKey: "66a5ddac054bfe9389e82de--your-secret-key--a7488756a00ca334a1468015da8",
+    authenticationLogic: async function (username: string, password: string) {
+      // Your authentication logic here
+    },
+    supportedOpenIdStandardClaims: async function (userId: string) {
+      // Return supported Open ID standard claims
+    },
+    subLookup: async (sub: string) => {
+      // returns the user who has an identifier equal to sub
+    },
+    securityMiddlewares: [
       // Oauth.authorize() - Add this middleware only on production mode
-  ],
+    ],
 });
 
 // start the app
 app.listen(3000, function () {
-  console.log('Example Oauth 2 server listening on port 3000!')
+    console.log('Example Oauth 2 server listening on port 3000!')
 })
 ```
 
