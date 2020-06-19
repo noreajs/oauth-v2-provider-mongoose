@@ -13,11 +13,13 @@ While developing app using **MEAN** _(MongoDB + Express+ Angular + Node.js)_, **
 ## Implemented specifications & Features
 
 - [RFC6749 - OAuth 2.0](https://tools.ietf.org/html/rfc6749) 
-  - Authorization (Authorization Code Flow, Implicit Flow)
-  - Client Credentials Grant
-  - Password Grant
+  - [x] Authorization (Authorization Code Flow, Implicit Flow)
+  - [x] Client Credentials Grant
+  - [x] Password Grant
 - [RFC7636 - Proof Key for Code Exchange (PKCE)](https://tools.ietf.org/html/rfc7636))
-  - Authorization code with PKCE
+  - [x] Authorization code with PKCE
+- [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html)
+  - [ ] ID Token `(soon)`
 
 
 
@@ -69,13 +71,13 @@ Oauth context default values:
 
 ```json
 {
-    confidential: {
-        internal: 60 * 60 * 24, // 24h
-        external: 60 * 60 * 12, // 12h
+    "confidential": {
+        "internal": 60 * 60 * 24, // 24h
+        "external": 60 * 60 * 12, // 12h
     },
-    public: {
-        internal: 60 * 60 * 2, // 2h
-        external: 60 * 60, // 1h
+    "public": {
+        "internal": 60 * 60 * 2, // 2h
+        "external": 60 * 60, // 1h
     }
 }
 ```
@@ -84,13 +86,13 @@ Oauth context default values:
 
 ```json
 {
-    {
-        internal: 60 * 60 * 24 * 30 * 12, // 1 year
-        external: 60 * 60 * 24 * 30, // 30 days
+    "confidential": {
+        "internal": 60 * 60 * 24 * 30 * 12, // 1 year
+        "external": 60 * 60 * 24 * 30, // 30 days
     },
-    public: {
-        internal: 60 * 60 * 24 * 30, // 30 days
-        external: 60 * 60 * 24 * 7, // 1 week
+    "public": {
+        "internal": 60 * 60 * 24 * 30, // 30 days
+        "external": 60 * 60 * 24 * 7, // 1 week
     }
 }
 ```
@@ -225,7 +227,7 @@ Client creation's request body example
     "internal": false,
     "redirectURIs": ["https://www.cakeshop.com/auth/callback"],
     "clientProfile": "web",
-    "scope": "read:users read:cake add:cakes" // "*" is allowed only for internal client
+    "scope": "read:users read:cake add:cakes" /* "*" is allowed only for internal client */
 }
 ```
 
@@ -654,11 +656,46 @@ Query parameters:
 
 ## Protecting Routes
 
-Via Middleware
+### Via Middleware. 
 
-Defining Scopes
+You can secure your routes by adding the middleware `Oauth.authorize()`. It is a static method of the `Oauth` class provided by the package.
 
-Checking Scopes
+Method definition:
+
+```typescript
+Oauth.authorize(scope?: string | undefined): (req: Request, res: Response, next: NextFunction) => Promise<Response<any> | undefined>
+```
+
+Import `Oauth` 
+
+```typescript
+import Oauth from "@noreajs/oauth-v2-provider-mongoose";
+
+// app is an express application or express router
+app.route('/account/update').put([
+    // ... other middleware
+    Oauth.authorize(), // oauth middleware. It must always be before the protected resource
+    // ... other middleware
+    authController.update // protected resource
+]);
+```
+
+### Checking Scopes
+
+The scope(s) required for a resource can be passed via the `Oauth.authorize` method as follow:
+
+```typescript
+app.route('/account/update').put([
+    Oauth.authorize('edit:profile'),
+    authController.update
+]);
+```
+
+**Note** : Many scopes can be transmitted by separating them with a space.
+
+### Defining Scopes
+
+(Coming soon)
 
 
 
