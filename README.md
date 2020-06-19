@@ -99,51 +99,66 @@ Oauth context default values:
 
 
 
-Initialization example - *don't worry about the content of the methods. You would write your own logic.*
+Initialization example
 
 ```typescript
+import express from "express";
+import { Oauth, IEndUserAuthData, JwtTokenReservedClaimsType } from "@noreajs/oauth-v2-provider-mongoose";
+
+const app = express();
+
 Oauth.init(app, {
   providerName: "Your App Name",
   secretKey:
     "66a5ddac054bfe9389e82dea96c85c2084d4b011c3d33e0681a7488756a00ca334a1468015da8",
   authenticationLogic: async function (username: string, password: string) {
-    const user = await User.findOne({ email: username });
-    if (user) {
-      if (user.verifyPassword(password)) {
-        const data: IEndUserAuthData = {
-          scope: "*",
-          userId: user._id,
-          extraData: {
-            user: user,
-          },
-        };
-        return data;
-      } else {
-        return undefined;
-      }
-    } else {
-      return undefined;
-    }
+    // Your authentication logic here
+    //
+    // if success, return an object of IEndUserAuthData type
+    //  const data: IEndUserAuthData = {
+    //      scope: "*",
+    //      userId: user._id,
+    //      extraData: {
+    //          user: user,
+    //     },
+    // };
+    // return data;
+    //
+    // if failed, return undefined
   },
   supportedOpenIdStandardClaims: async function (userId: string) {
-    const user = await User.findById(userId);
-    if (user) {
-      return {
-        name: user.username,
-        email: user.email,
-        email_verified:
-          user.emailVerifiedAt !== undefined && user.emailVerifiedAt !== null,
-        updated_at: user.updatedAt.getTime(),
-      } as JwtTokenReservedClaimsType;
-    } else {
-      return undefined;
-    }
+    // Return supported Open ID standard claims
+    //
+    // Example
+    //
+	//    const user = await User.findById(userId);
+	//    if (user) {
+	//    	return {
+	//    		name: user.username,
+	//    		email: user.email,
+	//    		email_verified:
+	//    		user.emailVerifiedAt !== undefined && user.emailVerifiedAt !== null,
+	//    		updated_at: user.updatedAt.getTime(),
+	//    	} as JwtTokenReservedClaimsType;
+	//    } else {
+	//    	return undefined;
+	//    }
   },
   subLookup: async (sub: string) => {
-    return await User.findById(sub);
+  	// returns the user who has an identifier equal to sub
+    //
+    // Example
+  	// return await User.findById(sub);
   },
-  securityMiddlewares: [Oauth.authorize()],
+  securityMiddlewares: [
+      // Oauth.authorize() - Add this middleware only on production mode
+  ],
 });
+
+// start the app
+app.listen(3000, function () {
+  console.log('Example Oauth 2 server listening on port 3000!')
+})
 ```
 
 
@@ -186,8 +201,8 @@ To respect Oauth 2 specifications some properties are needed for the client.
 
 Other client properties:
 
-* **legalTermsAcceptedAt** *(optional)*: if some legal terms need to be accepted before consuming your API.
-* **revokedAt** *(optional)*: filled when the client is revoked
+* **legalTermsAcceptedAt** *(OPTIONAL)*: if some legal terms need to be accepted before consuming your API.
+* **revokedAt** *(OPTIONAL)*: filled when the client is revoked
 * **createdAt**: client's creation date
 * **updatedAt**: date of the client's last modification
 
@@ -279,14 +294,14 @@ Once a client has been created, developers may use their client ID and secret to
     "client_id": "client-id",
     "redirect_uri": "http://example.com/callback",
     "response_type": "code",
-    "scope": "", // optional
-    "state": "" //optional but highly recommended
+    "scope": "", // OPTIONAL
+    "state": "" // OPTIONAL but highly recommended
 }
 ```
 
 > **Note**: _client_id_ and _client_secret_ can be sent via Basic authorization header and not in the request body.
 >
-> _Authorization: Basic {Base64(client_id:client_secret)}_
+> _Authorization: Basic {BASE64URL-ENCODE(client_id:client_secret)}_
 
 After sending this request, the client will be redirect to an authentication page. Once the end-user authenticated, he will be redirected to the provided *redirect_uri* with the authorization code.
 
@@ -312,11 +327,24 @@ The given authorization code will be used to request access token in the next st
 
 > **Note**: _client_id_ and _client_secret_ can be sent via Basic authorization header and not in the request body.
 >
-> _Authorization: Basic {Base64(client_id:client_secret)}_
+> _Authorization: Basic {BASE64URL-ENCODE(client_id:client_secret)}_
 
-Try with Postman as follow:
+**Try with [Postman](http://postman.com/)**  *(You can also try with other rest API client)*
 
-// some images
+* Configure a single request
+  * Create a new request
+  * Select **Authorization** tab
+  * Select **Oauth 2.0** within the Type
+  * Click on **Get New Access Token**
+  * Select **Authorization Code** as `Grant Type` value
+  *  Fill the rest of the form with the data of the client that you created before
+* Configure a folder
+  * Right click on the folder and Click on **Edit**
+  * Select **Authorization** tab
+  * Select **Oauth 2.0** within the Type
+  * Click on **Get New Access Token**
+  * Select **Authorization Code** as `Grant Type` value
+  *  Fill the rest of the form with the data of the client that you created before
 
 ### Authorization Code Grant with PKCE
 
@@ -330,7 +358,7 @@ As this authorization grant does not provide a client secret, developers will ne
 
 The code verifier should be a random string of between 43 and 128 characters containing letters, numbers and "-", ".", "\*", "~", as defined in the RFC 7636 specification.
 
-The code challenge should be a Base64 encoded string with URL and filename-safe characters. The trailing '=' characters should be removed and no line breaks, whitespace, or other additional characters should be present.
+The code challenge should be a BASE64URL-ENCODE encoded string with URL and filename-safe characters. The trailing '=' characters should be removed and no line breaks, whitespace, or other additional characters should be present.
 
 **Creating The Client**
 
@@ -370,8 +398,10 @@ Once a client has been created, developers may use their client ID and secret to
     "client_id": "client-id",
     "redirect_uri": "http://example.com/callback",
     "response_type": "code",
-    "scope": "", // optional
-    "state": "" //optional but highly recommended
+	"code_challenge": "generated-code-challenge", // REQUIRED.  Code challenge.
+    "code_challenge_method": "S256", // OPTIONAL, defaults to "plain" if not present in the request.  Code verifier transformation method is "S256" or "plain".
+    "scope": "", // OPTIONAL
+    "state": "" // OPTIONAL but highly recommended
 }
 ```
 
@@ -401,9 +431,22 @@ The given authorization code will be used to request access token in the next st
 
 
 
-Try with Postman as follow:
+**Try with [Postman](http://postman.com/)**  *(You can also try with other rest API client)*
 
-// some images
+* Configure a single request
+  * Create a new request
+  * Select **Authorization** tab
+  * Select **Oauth 2.0** within the Type
+  * Click on **Get New Access Token**
+  * Select **Authorization Code (With PKCE)** as `Grant Type` value
+  *  Fill the rest of the form with the data of the client that you created before
+* Configure a folder
+  * Right click on the folder and Click on **Edit**
+  * Select **Authorization** tab
+  * Select **Oauth 2.0** within the Type
+  * Click on **Get New Access Token**
+  * Select **Authorization Code (With PKCE)** as `Grant Type` value
+  *  Fill the rest of the form with the data of the client that you created before
 
 ### Password Grant
 
@@ -455,7 +498,7 @@ The consuming application should send client ID, secret key, username and passwo
     "client_secret": "client-secret",
     "username": "john.conor@sky.net",
     "password": "my-password",
-    "scope": "" // optional
+    "scope": "" // OPTIONAL
 }
 ```
 
@@ -463,11 +506,24 @@ The consuming application should send client ID, secret key, username and passwo
 
 > **Note**: _client_id_ and _client_secret_ can be sent via Basic authorization header and not in the request body.
 >
-> _Authorization: Basic {Base64(client_id:client_secret)}_
+> _Authorization: Basic {BASE64URL-ENCODE(client_id:client_secret)}_
 
-Try with Postman as follow:
+**Try with [Postman](http://postman.com/)**  *(You can also try with other rest API client)*
 
-// some images
+* Configure a single request
+  * Create a new request
+  * Select **Authorization** tab
+  * Select **Oauth 2.0** within the Type
+  * Click on **Get New Access Token**
+  * Select **Password Credentials** as `Grant Type` value
+  *  Fill the rest of the form with the data of the client that you created before
+* Configure a folder
+  * Right click on the folder and Click on **Edit**
+  * Select **Authorization** tab
+  * Select **Oauth 2.0** within the Type
+  * Click on **Get New Access Token**
+  * Select **Password Credentials** as `Grant Type` value
+  *  Fill the rest of the form with the data of the client that you created before
 
 ### Implicit Grant
 
@@ -509,16 +565,27 @@ Request body example:
     "client_id": "client-id",
     "redirect_uri": "http://example.com/callback",
     "response_type": "token",
-    "scope": "", // optional
-    "state": "state"
+    "scope": "", // OPTIONAL
+    "state": "state" // OPTIONAL but highly recommended
 }
 ```
 
 
 
-Try with Postman as follow:
+**Try with [Postman](http://postman.com/)**  *(You can also try with other rest API client)*
 
-// some image
+* Configure a single request
+  * Create a new request
+  * Select **Authorization** tab
+  * Select **Oauth 2.0** within the Type
+  * Click on **Get New Access Token** and fill the form with the client data
+  * Select **Implicit** as `Grant Type` value
+  *  Fill the rest of the form with the data of the client that you created before
+* Configure a folder
+  * Right click on the folder and Click on **Edit**
+  * Select **Authorization** tab
+  * Select **Implicit** as `Grant Type` value
+  *  Fill the rest of the form with the data of the client that you created before
 
 ### Client Credentials Grant
 
@@ -559,20 +626,33 @@ Request body example:
     "grant_type": "client_credentials",
     "client_id": "client-id",
     "client_secret": "client-secret",
-    "scope": "client-requested-scope" // optional
+    "scope": "client-requested-scope" // OPTIONAL
 }
 ```
 
 > **Note**: _client_id_ and _client_secret_ can be sent via Basic authorization header and not in the request body.
 >
-> _Authorization: Basic {Base64(client_id:client_secret)}_
+> _Authorization: Basic {BASE64URL-ENCODE(client_id:client_secret)}_
 >
 
-Try with Postman as follow:
-
-// some image
 
 
+**Try with [Postman](http://postman.com/)**  *(You can also try with other rest API client)*
+
+* Configure a single request
+  * Create a new request
+  * Select **Authorization** tab
+  * Select **Oauth 2.0** within the Type
+  * Click on **Get New Access Token**
+  * Select **Client Credentials** as `Grant Type` value
+  *  Fill the rest of the form with the data of the client that you created before
+* Configure a folder
+  * Right click on the folder and Click on **Edit**
+  * Select **Authorization** tab
+  * Select **Oauth 2.0** within the Type
+  * Click on **Get New Access Token**
+  * Select **Client Credentials** as `Grant Type` value
+  *  Fill the rest of the form with the data of the client that you created before
 
 ## Refreshing Tokens
 
@@ -592,17 +672,13 @@ Token generated with some grants as Password Credentials Grant and Authorization
     "refresh_token": "the-refresh-token",
     "client_id": "client-id",
     "client_secret": "client-secret",
-    "scope": "client-requested-scope" // optional
+    "scope": "client-requested-scope" // OPTIONAL
 }
 ```
 
 > **Note**: _client_id_ and _client_secret_ can be sent via Basic authorization header and not in the request body.
 >
-> _Authorization: Basic {Base64(client_id:client_secret)}_
-
-Try with Postman as follow:
-
-// some image
+> _Authorization: Basic {BASE64URL-ENCODE(client_id:client_secret)}_
 
 
 
@@ -620,7 +696,7 @@ Query parameters:
 
 ```typescript
 {
-  "type": "revoked or expired" // (optional - if empty or undefined both revoked and expired will be purged)
+  "type": "revoked or expired" // (OPTIONAL - if empty or undefined both revoked and expired will be purged)
 }
 ```
 
@@ -634,7 +710,7 @@ Query parameters:
 
 ```typescript
 {
-  "type": "revoked or expired" // (optional - if empty or undefined both revoked and expired will be purged)
+  "type": "revoked or expired" // (OPTIONAL - if empty or undefined both revoked and expired will be purged)
 }
 ```
 
@@ -648,7 +724,7 @@ Query parameters:
 
 ```typescript
 {
-  "type": "revoked or expired" // (optional - if empty or undefined both revoked and expired will be purged)
+  "type": "revoked or expired" // (OPTIONAL - if empty or undefined both revoked and expired will be purged)
 }
 ```
 
@@ -669,7 +745,7 @@ Oauth.authorize(scope?: string | undefined): (req: Request, res: Response, next:
 Import `Oauth` 
 
 ```typescript
-import Oauth from "@noreajs/oauth-v2-provider-mongoose";
+import { Oauth } from "@noreajs/oauth-v2-provider-mongoose";
 
 // app is an express application or express router
 app.route('/account/update').put([
@@ -679,6 +755,26 @@ app.route('/account/update').put([
     authController.update // protected resource
 ]);
 ```
+
+### Secure Oauth 2 endpoints
+
+While initializing the provider, there is a property called `securityMiddlewares`. Once your app if fully functional and ready for production you can secure Oauth 2 endpoints *(Client management endpoints, purge endpoints)*.
+
+`securityMiddlewares` initialization example
+
+```typescript
+{
+    // ... other initialization properties
+    "securityMiddlewares": [
+        // other middlewares
+        Oauth.authorize('create:clients list:clients purge:tokens purge:codes'),
+        // other middlewares
+    ],
+    // ... other initialization properties
+}
+```
+
+
 
 ### Checking Scopes
 
@@ -696,6 +792,24 @@ app.route('/account/update').put([
 ### Defining Scopes
 
 (Coming soon)
+
+
+
+## Mongoose Models
+
+The Mongoose models used by the package are accessible. You can use them as you wish.
+
+* OauthAccessToken
+* OauthAuthCode
+* OauthClient
+* OauthRefreshToken
+* OauthScope
+
+You can import these models as follows:
+
+``` typescript
+import { /* model_name*/ } from "@noreajs/oauth-v2-provider-mongoose"
+```
 
 
 
