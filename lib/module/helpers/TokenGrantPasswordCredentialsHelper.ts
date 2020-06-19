@@ -1,7 +1,7 @@
 import ITokenRequest from "../interfaces/ITokenRequest";
 import { IOauthClient } from "../models/OauthClient";
 import IToken from "../interfaces/IToken";
-import { HttpStatus } from "@noreajs/common";
+import { HttpStatus, checkRequiredKeys } from "@noreajs/common";
 import { Request, Response } from "express";
 import UtilsHelper from "./UtilsHelper";
 import OauthHelper from "./OauthHelper";
@@ -33,7 +33,7 @@ class TokenGrantPasswordCredentialsHelper {
          * Required parameters
          * *********************************
          */
-        const requiredParameters = UtilsHelper.checkAttributes<ITokenRequest>(
+        const requiredParameters = checkRequiredKeys<ITokenRequest>(
           ["username", "password"],
           data
         );

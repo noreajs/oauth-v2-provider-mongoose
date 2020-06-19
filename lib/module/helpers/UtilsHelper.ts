@@ -8,22 +8,6 @@ class UtilsHelper {
   RSA_PRIVATE_KEY_FILE_NAME = "private-key";
 
   /**
-   * Check required keys
-   * @param attrs object attributes
-   * @param target object
-   */
-  checkAttributes<T, K = keyof T>(attrs: K[], target: T): K[] {
-    const r: K[] = [];
-    for (const attr of attrs) {
-      const element = (target as any)[attr];
-      if (!element || (typeof element === "string" && element.length === 0)) {
-        r.push(attr);
-      }
-    }
-    return r;
-  }
-
-  /**
    * Get scopes both in the two scopes
    * @param queryScope query scope
    * @param targetScope target scope

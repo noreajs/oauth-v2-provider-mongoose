@@ -3,6 +3,7 @@ import IAuthCodeRequest from "../interfaces/IAuthCodeRequest";
 import UtilsHelper from "../helpers/UtilsHelper";
 import OauthClient from "../models/OauthClient";
 import OauthHelper from "../helpers/OauthHelper";
+import { checkRequiredKeys } from "@noreajs/common";
 
 class AuthorizationMiddleware {
   /**
@@ -19,7 +20,7 @@ class AuthorizationMiddleware {
       /**
        * Required parameters
        */
-      const requiredParameters = UtilsHelper.checkAttributes<IAuthCodeRequest>(
+      const requiredParameters = checkRequiredKeys<IAuthCodeRequest>(
         ["response_type", "redirect_uri", "client_id"],
         data
       );

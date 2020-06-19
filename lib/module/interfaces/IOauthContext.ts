@@ -93,7 +93,7 @@ export interface IOauthContext {
   tokenType?: "Bearer";
 
   /**
-   * Authorization lifetime in seconds
+   * Authorization code lifetime in seconds
    */
   authorizationCodeLifeTime?: number;
 

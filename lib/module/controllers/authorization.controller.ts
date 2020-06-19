@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import IAuthCodeRequest from "../interfaces/IAuthCodeRequest";
 import { IOauthClient } from "../models/OauthClient";
-import { HttpStatus } from "@noreajs/common";
+import { HttpStatus, checkRequiredKeys } from "@noreajs/common";
 import UrlHelper from "../helpers/UrlHelper";
 import OauthAuthCode, { IOauthAuthCode } from "../models/OauthAuthCode";
 import moment from "moment";
@@ -218,7 +218,7 @@ class AuthorizationController extends OauthController {
     if (oauthCode) {
       try {
         // checking required field
-        const requiredFields = UtilsHelper.checkAttributes<any>(
+        const requiredFields = checkRequiredKeys<any>(
           ["username", "password"],
           formData
         );
