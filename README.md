@@ -69,7 +69,7 @@ Oauth context default values:
 * **authorizationCodeLifeTime**: 60 * 5 // 5 minutes
 * **accessTokenExpiresIn**
 
-```json
+```typescript
 {
     "confidential": {
         "internal": 60 * 60 * 24, // 24h
@@ -84,7 +84,7 @@ Oauth context default values:
 
 * **refreshTokenExpiresIn**
 
-```json
+```typescript
 {
     "confidential": {
         "internal": 60 * 60 * 24 * 30 * 12, // 1 year
@@ -221,13 +221,13 @@ OAuth defines two client types, based on their ability to authenticate securely 
 
 Client creation's request body example
 
-```json
+```typescript
 {
     "name": "Cake Shop",
     "internal": false,
     "redirectURIs": ["https://www.cakeshop.com/auth/callback"],
     "clientProfile": "web",
-    "scope": "read:users read:cake add:cakes" /* "*" is allowed only for internal client */
+    "scope": "read:users read:cake add:cakes" // "*" is allowed only for internal client
 }
 ```
 
@@ -250,7 +250,7 @@ Targeted applications:
 
 Request body example:
 
-```json
+```typescript
 {
     "name": "App Name",
     "internal": true,
@@ -274,7 +274,7 @@ Once a client has been created, developers may use their client ID and secret to
 
 * Query parameters: 
 
-```json
+```typescript
 {
     "client_id": "client-id",
     "redirect_uri": "http://example.com/callback",
@@ -300,7 +300,7 @@ The given authorization code will be used to request access token in the next st
 
 * Query body: 
 
-```json
+```typescript
 {
     "grant_type": "authorization_code", 
     "client_id": "client-id",
@@ -341,7 +341,7 @@ Targeted applications:
 
 Request body example:
 
-```json
+```typescript
 {
     "name": "App Name",
     "internal": false,
@@ -365,7 +365,7 @@ Once a client has been created, developers may use their client ID and secret to
 
 * Query parameters:
 
-```json
+```typescript
 {
     "client_id": "client-id",
     "redirect_uri": "http://example.com/callback",
@@ -389,7 +389,7 @@ The given authorization code will be used to request access token in the next st
 
 * Query body:
 
-```json
+```typescript
 {
     "grant_type": "authorization_code",
     "client_id": "client-id",
@@ -422,7 +422,7 @@ This grant is recommended for internal ([First-party applications](https://auth0
 
 Request body example:
 
-```json
+```typescript
 {
     "name": "App Name",
     "internal": true, // must be true for password grant
@@ -448,7 +448,7 @@ The consuming application should send client ID, secret key, username and passwo
 
 * Query body: 
 
-```json
+```typescript
 {
     "grant_type": "password",
     "client_id": "client-id",
@@ -484,7 +484,7 @@ Targeted applications:
 
 Request body example:
 
-```json
+```typescript
 {
     "name": "App Name",
     "internal": true,
@@ -504,7 +504,7 @@ Request body example:
 
 * Query body: 
 
-```json
+```typescript
 {
     "client_id": "client-id",
     "redirect_uri": "http://example.com/callback",
@@ -534,7 +534,7 @@ Targeted applications:
 
 Request body example:
 
-```json
+```typescript
 {
     "name": "App Name",
     "internal": true, // must be true for client credentials grant
@@ -554,7 +554,7 @@ Request body example:
 
 * Query body:
 
-```json
+```typescript
 {
     "grant_type": "client_credentials",
     "client_id": "client-id",
@@ -586,7 +586,7 @@ Token generated with some grants as Password Credentials Grant and Authorization
 
 * Query body:
 
-```json
+```typescript
 {
     "grant_type": "refresh_token",
     "refresh_token": "the-refresh-token",
@@ -618,7 +618,7 @@ Endpoint: **{YOUR_API_BASE_URL}/oauth/v2/purge/token**
 
 Query parameters:
 
-```json
+```typescript
 {
   "type": "revoked or expired" // (optional - if empty or undefined both revoked and expired will be purged)
 }
@@ -632,7 +632,7 @@ Endpoint: **{YOUR_API_BASE_URL}/oauth/v2/purge/code**
 
 Query parameters:
 
-```json
+```typescript
 {
   "type": "revoked or expired" // (optional - if empty or undefined both revoked and expired will be purged)
 }
@@ -646,7 +646,7 @@ Endpoint: **{YOUR_API_BASE_URL}/oauth/v2/purge**
 
 Query parameters:
 
-```json
+```typescript
 {
   "type": "revoked or expired" // (optional - if empty or undefined both revoked and expired will be purged)
 }
