@@ -58,7 +58,7 @@ const app = new NoreaApp(apiRoutes, {
           subLookup: async (sub: string) => {
             return await User.findById(sub);
           },
-          securityMiddlewares: [Oauth.authorize()],
+          // securityMiddlewares: [Oauth.authorize()],
         });
       },
     });

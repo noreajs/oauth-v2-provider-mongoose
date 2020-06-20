@@ -61,6 +61,9 @@ class AuthorizationController extends OauthController {
          * ******************************
          */
         if (payload.order === "cancel") {
+          // clear error
+          req.session.error = undefined;
+
           return OauthHelper.throwError(
             req,
             res,

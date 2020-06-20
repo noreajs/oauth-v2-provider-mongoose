@@ -118,8 +118,50 @@ export default mongooseModel<IOauthClient>({
         type: Schema.Types.Boolean,
         required: [true, "The internal"],
       },
-      grants: [Schema.Types.String],
-      redirectURIs: [Schema.Types.String],
+      grants: {
+        type: [Schema.Types.String],
+        enum: [
+          "implicit",
+          "authorization_code",
+          "password",
+          "client_credentials",
+        ],
+        required: [true, "Client grants are required."],
+      },
+      redirectURIs: {
+        type: [Schema.Types.String],
+        validate: [
+          {
+            validator: function (values: string[]) {
+              let invalidUriFound = false;
+              for (const uri of values) {
+                if (!validator.isURL(uri)) {
+                  invalidUriFound = true;
+                  break;
+                }
+              }
+              return !invalidUriFound;
+            },
+            msg: "The redirect URIs value must be valid",
+          },
+          {
+            validator: function (values: string[]) {
+              const self = this as IOauthClient;
+              if (
+                self.grants.includes("implicit") ||
+                self.grants.includes("authorization_code")
+              ) {
+                return values.length > 0;
+              } else {
+                return true;
+              }
+            },
+            msg:
+              "At least one redirect URI when grants includes 'implicit' and 'authorization_code'",
+          },
+        ],
+        required: false,
+      },
       clientType: {
         type: Schema.Types.String,
         enum: ["confidential", "public"],
@@ -336,7 +378,7 @@ export default mongooseModel<IOauthClient>({
      * Before save
      * ******************************
      */
-    sc.pre<IOauthClient>("save", function (next: HookNextFunction) {
+    sc.pre<IOauthClient>("validate", function (next: HookNextFunction) {
       /**
        * Secret code availability
        * **********************
@@ -372,24 +414,6 @@ export default mongooseModel<IOauthClient>({
             this.grants = ["implicit", "authorization_code"];
           }
           break;
-      }
-
-      /**
-       * Validate redirect URIs
-       * ************************
-       */
-      let invalidUriFound = false;
-      for (const uri of this.redirectURIs) {
-        if (!validator.isURL(uri)) {
-          invalidUriFound = true;
-          break;
-        }
-      }
-      if (invalidUriFound) {
-        next({
-          name: "Redirect URIs validation fail",
-          message: "The redirect URIs value must be valid URLs.",
-        });
       }
 
       /**

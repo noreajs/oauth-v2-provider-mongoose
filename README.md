@@ -655,47 +655,23 @@ Token generated with some grants as Password Credentials Grant and Authorization
 
 This package provide some endpoints to purge revoked or expired tokens and authorization codes.
 
-1. **Tokens**
+| Target                       | HTTP Method | Endpoint              |
+| ---------------------------- | ----------- | --------------------- |
+| Tokens                       | DELETE      | /oauth/v2/purge/token |
+| Authorization Codes          | DELETE      | /oauth/v2/purge/code  |
+| Tokens & Authorization Codes | DELETE      | /oauth/v2/purge       |
 
-HTTP Method: **GET**
+By default, all *expired* or *revoked* tokens or codes are purged, but you may want to delete only revoked tokens or only expired tokens. To do this, you can pass the `type` parameter to your request, which can respectively take the values **revoked** or **expired**.
 
-Endpoint: **{YOUR_API_BASE_URL}/oauth/v2/purge/token**
+Example:
 
-Query parameters:
+* **DELETE: {YOUR_API_BASE_URL}/oauth/v2/purge/token?type=revoked**
 
-```typescript
-{
-  "type": "revoked or expired" // (OPTIONAL - if empty or undefined both revoked and expired will be purged)
-}
-```
+  Delete all revoked tokens
 
-2. **Authorization codes**
+* **DELETE: {YOUR_API_BASE_URL}/oauth/v2/purge/code**
 
-HTTP Method: **GET**
-
-Endpoint: **{YOUR_API_BASE_URL}/oauth/v2/purge/code**
-
-Query parameters:
-
-```typescript
-{
-  "type": "revoked or expired" // (OPTIONAL - if empty or undefined both revoked and expired will be purged)
-}
-```
-
-3. **Both tokens and authorization codes**
-
-HTTP Method: **GET**
-
-Endpoint: **{YOUR_API_BASE_URL}/oauth/v2/purge**
-
-Query parameters:
-
-```typescript
-{
-  "type": "revoked or expired" // (OPTIONAL - if empty or undefined both revoked and expired will be purged)
-}
-```
+  Delete both revoked and expired authorization codes
 
 
 

@@ -148,23 +148,6 @@ class AccessTokenController extends OauthController {
       });
     }
   };
-
-  /**
-   * Purge expired and revoked token
-   * @param req request
-   * @param res response
-   */
-  async purge(req: Request, res: Response) {
-    // remove all revoked access token
-    await OauthAccessToken.remove({ revokedAt: { $exists: true } });
-
-    // remove all revoked authorization code
-    await OauthAuthCode.remove({ revokedAt: { $exists: true } });
-
-    return res.status(HttpStatus.Ok).json({
-      message: "Purge Ok",
-    });
-  }
 }
 
 export default AccessTokenController;

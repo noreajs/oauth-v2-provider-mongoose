@@ -5,6 +5,7 @@ import authorizationRoutes from "./authorization.routes";
 import accessTokenRoutes from "./access-token.routes";
 import OauthContext from "../OauthContext";
 import oauthScopeRoutes from "./oauth-scope.routes";
+import purgeRoutes from "./purge.routes";
 
 export default (app: Application, oauthContext: OauthContext) => {
   /**
@@ -33,6 +34,11 @@ export default (app: Application, oauthContext: OauthContext) => {
    * Access tokens routes
    */
   accessTokenRoutes(oauthModule, oauthContext);
+
+  /**
+   * Purge tokens and codes
+   */
+  purgeRoutes(oauthModule, oauthContext);
 
   /**
    * Get token
