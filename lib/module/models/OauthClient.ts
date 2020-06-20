@@ -8,6 +8,8 @@ import OauthHelper from "../helpers/OauthHelper";
 import OauthRefreshToken, { IOauthRefreshToken } from "./OauthRefreshToken";
 import UtilsHelper from "../helpers/UtilsHelper";
 import OauthContext from "../OauthContext";
+import OauthScope from "./OauthScope";
+import { Arr, Obj } from "@noreajs/common";
 
 export type OauthClientType = "confidential" | "public";
 export type OauthClientProfileType = "web" | "user-agent-based" | "native";
@@ -375,7 +377,7 @@ export default mongooseModel<IOauthClient>({
   },
   externalConfig: function (sc) {
     /**
-     * Before save
+     * Before validate
      * ******************************
      */
     sc.pre<IOauthClient>("validate", function (next: HookNextFunction) {
@@ -428,6 +430,38 @@ export default mongooseModel<IOauthClient>({
        * Save the client
        */
       next();
+    });
+
+    /**
+     * Before save
+     * ***************************************
+     */
+    sc.pre<IOauthClient>("save", async function (next: HookNextFunction) {
+      /**
+       * Verify scopes
+       */
+      if (this.scope) {
+        const scopes = this.scope.split(" ");
+
+        const oauthScopes = await OauthScope.find({
+          name: { $in: scopes },
+        });
+
+        // missing scopes
+        const missingScopes = Arr.missing(
+          scopes,
+          Obj.pluck(oauthScopes, "name")
+        );
+
+        if (missingScopes.length !== 0) {
+          next({
+            name: "Scope validation failed",
+            message: `Missing or not yet created ${
+              missingScopes.length == 1 ? "scope" : "scopes"
+            }: ${missingScopes.join(", ")}.`,
+          });
+        }
+      }
     });
   },
 });

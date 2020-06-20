@@ -3,6 +3,7 @@ import moment from "moment";
 import OauthController from "./oauth.controller";
 import OauthAccessToken from "../models/OauthAccessToken";
 import OauthAuthCode from "../models/OauthAuthCode";
+import { HttpStatus } from "@noreajs/common";
 
 type PurgeType = "revoked" | "expired";
 const PurgeTypeList = ["revoked", "expired"];
@@ -98,7 +99,7 @@ class PurgeController extends OauthController {
           break;
         }
       }
-      return res.status(200).json({
+      return res.status(HttpStatus.Ok).json({
         target: PurgeTypeList.includes(purgeType)
           ? purgeType
           : PurgeTypeList.join(" or "),
@@ -106,7 +107,7 @@ class PurgeController extends OauthController {
         purgeCodes: purgedCodes,
       });
     } catch (error) {
-      return res.status(500).json(error);
+      return res.status(HttpStatus.InternalServerError).json(error);
     }
   }
 
@@ -157,14 +158,14 @@ class PurgeController extends OauthController {
           });
           break;
       }
-      return res.status(200).json({
+      return res.status(HttpStatus.Ok).json({
         target: PurgeTypeList.includes(purgeType)
           ? purgeType
           : PurgeTypeList.join(" or "),
         purgedTokens: purgedTokens,
       });
     } catch (error) {
-      return res.status(500).json(error);
+      return res.status(HttpStatus.InternalServerError).json(error);
     }
   }
 
@@ -215,14 +216,14 @@ class PurgeController extends OauthController {
           });
           break;
       }
-      return res.status(200).json({
+      return res.status(HttpStatus.Ok).json({
         target: PurgeTypeList.includes(purgeType)
           ? purgeType
           : PurgeTypeList.join(" or "),
         purgedCodes: purgedCodes,
       });
     } catch (error) {
-      return res.status(500).json(error);
+      return res.status(HttpStatus.InternalServerError).json(error);
     }
   }
 }

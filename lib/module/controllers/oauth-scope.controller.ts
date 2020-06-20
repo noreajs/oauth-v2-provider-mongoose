@@ -33,7 +33,7 @@ export default class OauthScopeController extends OauthController {
       // create a new oauth scope
       const scope = await new OauthScope({
         name: req.body.name,
-        description: req.body.domaine,
+        description: req.body.description,
         parent: req.body.parent,
       } as Partial<IOauthScope>).save();
 
@@ -58,7 +58,7 @@ export default class OauthScopeController extends OauthController {
         // apply changes
         scope.set({
           name: req.body.name || scope.name,
-          description: req.body.domaine || scope.description,
+          description: req.body.description || scope.description,
           parent: req.body.parent || scope.parent._id,
         } as Partial<IOauthScope>);
         // change approval state

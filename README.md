@@ -132,7 +132,40 @@ app.listen(3000, function () {
 
 
 
-## Managing Clients
+## Manage scopes
+
+To make your API more secure, Each route should be associated with one or more scopes.
+
+Some endpoints are already provided with the package to manage scopes:
+
+| HTTP Method | Route                | Description        |
+| ----------- | -------------------- | ------------------ |
+| GET         | /oauth/v2/scopes     | Get all scopes     |
+| GET         | /oauth/v2/scopes/:id | Get scope by ID    |
+| POST        | /oauth/v2/scopes     | Create a new scope |
+| PUT         | /oauth/v2/scopes/:id | Edit a scope       |
+| DELETE      | /oauth/v2/scopes/:id | Delete a scope     |
+
+Scope properties
+
+| Property Name | Type     | Optional | Description                                           |
+| ------------- | -------- | -------- | ----------------------------------------------------- |
+| name          | string   | false    | Name of the scope. String without space.              |
+| description   | string   | true     | Description of the scope                              |
+| parent        | ObjectId | true     | To better organize the scopes, some can have parents. |
+
+Scope creation's body request example
+
+```json
+{
+    "name": "edit:user",
+    "description": "Edit a user account"
+}
+```
+
+
+
+## Manage clients
 
 Developers building applications that need to interact with your application's API will need to register their application with yours by creating a "client".
 
@@ -172,8 +205,6 @@ Other client properties:
 
 * **legalTermsAcceptedAt** *(OPTIONAL)*: if some legal terms need to be accepted before consuming your API.
 * **revokedAt** *(OPTIONAL)*: filled when the client is revoked
-* **createdAt**: client's creation date
-* **updatedAt**: date of the client's last modification
 
 ### Client types detailed
 
@@ -734,21 +765,19 @@ app.route('/account/update').put([
 
 **Note** : Many scopes can be transmitted by separating them with a space.
 
-### Defining Scopes
-
-(Coming soon)
-
 
 
 ## Mongoose Models
 
 The Mongoose models used by the package are accessible. You can use them as you wish.
 
-* OauthAccessToken
-* OauthAuthCode
-* OauthClient
-* OauthRefreshToken
-* OauthScope
+| Model Name        | Collection Name      | Description                |
+| ----------------- | -------------------- | -------------------------- |
+| OauthAccessToken  | oauth_access_tokens  | Manage access tokens       |
+| OauthAuthCode     | oauth_auth_codes     | Manage authorization codes |
+| OauthClient       | oauth_clients        | Manage clients             |
+| OauthRefreshToken | oauth_refresh_tokens | Manage refresh tokens      |
+| OauthScope        | oauth_scopes         | Manage scopes              |
 
 You can import these models as follows:
 

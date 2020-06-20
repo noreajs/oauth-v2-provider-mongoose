@@ -1,8 +1,10 @@
 import { IOauthClient } from "./OauthClient";
 import { mongooseModel } from "@noreajs/mongoose";
-import { Schema, Document } from "mongoose";
+import { Schema, Document, HookNextFunction } from "mongoose";
 import validator from "validator";
 import { IAuthorizationResponseType } from "../interfaces/IAuthCodeRequest";
+import OauthScope from "./OauthScope";
+import { Arr, Obj } from "@noreajs/common";
 
 export interface IOauthAuthCode extends Document {
   userId: string;
@@ -59,7 +61,7 @@ export default mongooseModel<IOauthAuthCode>({
       responseType: {
         type: Schema.Types.String,
         enum: ["code", "token"],
-        required: [true, "The reponse type is required."]
+        required: [true, "The reponse type is required."],
       },
       codeChallenge: {
         type: Schema.Types.String,
@@ -95,4 +97,36 @@ export default mongooseModel<IOauthAuthCode>({
       timestamps: true,
     }
   ),
+  externalConfig: function (schema) {
+    /**
+     * Before save
+     */
+    schema.pre<IOauthAuthCode>("save", async function (next: HookNextFunction) {
+      /**
+       * Verify scopes
+       */
+      if (this.scope) {
+        const scopes = this.scope.split(" ");
+
+        const oauthScopes = await OauthScope.find({
+          name: { $in: scopes },
+        });
+
+        // missing scopes
+        const missingScopes = Arr.missing(
+          scopes,
+          Obj.pluck(oauthScopes, "name")
+        );
+
+        if (missingScopes.length !== 0) {
+          next({
+            name: "Scope validation failed",
+            message: `Missing or not yet created ${
+              missingScopes.length == 1 ? "scope" : "scopes"
+            }: ${missingScopes.join(", ")}.`,
+          });
+        }
+      }
+    });
+  },
 });
