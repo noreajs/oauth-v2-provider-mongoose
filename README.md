@@ -71,13 +71,13 @@ Oauth context default values:
 
 ```typescript
 {
-    "confidential": {
-        "internal": 60 * 60 * 24, // 24h
-        "external": 60 * 60 * 12, // 12h
+    confidential: {
+        internal: 60 * 60 * 24, // 24h
+        external: 60 * 60 * 12, // 12h
     },
-    "public": {
-        "internal": 60 * 60 * 2, // 2h
-        "external": 60 * 60, // 1h
+    public: {
+        internal: 60 * 60 * 2, // 2h
+        external: 60 * 60, // 1h
     }
 }
 ```
@@ -86,13 +86,13 @@ Oauth context default values:
 
 ```typescript
 {
-    "confidential": {
-        "internal": 60 * 60 * 24 * 30 * 12, // 1 year
-        "external": 60 * 60 * 24 * 30, // 30 days
+    confidential: {
+        internal: 60 * 60 * 24 * 30 * 12, // 1 year
+        external: 60 * 60 * 24 * 30, // 30 days
     },
-    "public": {
-        "internal": 60 * 60 * 24 * 30, // 30 days
-        "external": 60 * 60 * 24 * 7, // 1 week
+    public: {
+        internal: 60 * 60 * 24 * 30, // 30 days
+        external: 60 * 60 * 24 * 7, // 1 week
     }
 }
 ```
@@ -206,6 +206,19 @@ Other client properties:
 * **legalTermsAcceptedAt** *(OPTIONAL)*: if some legal terms need to be accepted before consuming your API.
 * **revokedAt** *(OPTIONAL)*: filled when the client is revoked
 
+#### Revoke a client
+
+To revoke a client, use the edit endpoint and send data as follow:
+
+```typescript
+{
+    // ... other fields
+    revoke: true // you can also end false in other to cancel revokation
+}
+```
+
+
+
 ### Client types detailed
 
 OAuth defines two client types, based on their ability to authenticate securely with the authorization server.
@@ -238,11 +251,11 @@ Client creation's request body example
 
 ```typescript
 {
-    "name": "Cake Shop",
-    "internal": false,
-    "redirectURIs": ["https://www.cakeshop.com/auth/callback"],
-    "clientProfile": "web",
-    "scope": "read:users read:cake add:cakes" // "*" is allowed only for internal client
+    name: "Cake Shop",
+    internal: false,
+    redirectURIs: ["https://www.cakeshop.com/auth/callback"],
+    clientProfile: "web",
+    scope: "read:users read:cake add:cakes" // "*" is allowed only for internal client
 }
 ```
 
@@ -267,11 +280,11 @@ Request body example:
 
 ```typescript
 {
-    "name": "App Name",
-    "internal": true,
-    "redirectURIs": ["https://www.app_name.com/auth/callback"],
-    "clientProfile": "web",
-    "scope": "*"
+    name: "App Name",
+    internal: true,
+    redirectURIs: ["https://www.app_name.com/auth/callback"],
+    clientProfile: "web",
+    scope: "*"
 }
 ```
 
@@ -291,11 +304,11 @@ Once a client has been created, developers may use their client ID and secret to
 
 ```typescript
 {
-    "client_id": "client-id",
-    "redirect_uri": "http://example.com/callback",
-    "response_type": "code",
-    "scope": "", // OPTIONAL
-    "state": "" // OPTIONAL but highly recommended
+    client_id: "client-id",
+    redirect_uri: "http://example.com/callback",
+    response_type: "code",
+    scope: "", // OPTIONAL
+    state: "" // OPTIONAL but highly recommended
 }
 ```
 
@@ -317,11 +330,11 @@ The given authorization code will be used to request access token in the next st
 
 ```typescript
 {
-    "grant_type": "authorization_code", 
-    "client_id": "client-id",
-    "client_secret": "client-secret", // required only for confidential client
-    "redirect_uri": "http://example.com/callback",
-    "code": "code" // code previously received
+    grant_type: "authorization_code", 
+    client_id: "client-id",
+    client_secret: "client-secret", // required only for confidential client
+    redirect_uri: "http://example.com/callback",
+    code: "code" // code previously received
 }
 ```
 
@@ -371,11 +384,11 @@ Request body example:
 
 ```typescript
 {
-    "name": "App Name",
-    "internal": false,
-    "redirectURIs": ["https://www.app_name.com/auth/callback"],
-    "clientProfile": "user-agent-based",
-    "scope": "read:users list:users"
+    name: "App Name",
+    internal: false,
+    redirectURIs: ["https://www.app_name.com/auth/callback"],
+    clientProfile: "user-agent-based",
+    scope: "read:users list:users"
 }
 ```
 
@@ -395,13 +408,13 @@ Once a client has been created, developers may use their client ID and secret to
 
 ```typescript
 {
-    "client_id": "client-id",
-    "redirect_uri": "http://example.com/callback",
-    "response_type": "code",
-	"code_challenge": "generated-code-challenge", // REQUIRED.  Code challenge.
-    "code_challenge_method": "S256", // OPTIONAL, defaults to "plain" if not present in the request.  Code verifier transformation method is "S256" or "plain".
-    "scope": "", // OPTIONAL
-    "state": "" // OPTIONAL but highly recommended
+    client_id: "client-id",
+    redirect_uri: "http://example.com/callback",
+    response_type: "code",
+	code_challenge: "generated-code-challenge", // REQUIRED.  Code challenge.
+    code_challenge_method: "S256", // OPTIONAL, defaults to "plain" if not present in the request.  Code verifier transformation method is "S256" or "plain".
+    scope: "", // OPTIONAL
+    state: "" // OPTIONAL but highly recommended
 }
 ```
 
@@ -421,11 +434,11 @@ The given authorization code will be used to request access token in the next st
 
 ```typescript
 {
-    "grant_type": "authorization_code",
-    "client_id": "client-id",
-    "redirect_uri": "http://example.com/callback",
-    "code_verifier": "codeVerifier",
-    "code": "code" // code previously received
+    grant_type: "authorization_code",
+    client_id: "client-id",
+    redirect_uri: "http://example.com/callback",
+    code_verifier: "codeVerifier",
+    code: "code" // code previously received
 }
 ```
 
@@ -467,11 +480,11 @@ Request body example:
 
 ```typescript
 {
-    "name": "App Name",
-    "internal": true, // must be true for password grant
-    "redirectURIs": ["https://www.app_name.com/auth/callback"],
-    "clientProfile": "native",
-    "scope": "*"
+    name: "App Name",
+    internal: true, // must be true for password grant
+    redirectURIs: ["https://www.app_name.com/auth/callback"],
+    clientProfile: "native",
+    scope: "*"
 }
 ```
 
@@ -493,12 +506,12 @@ The consuming application should send client ID, secret key, username and passwo
 
 ```typescript
 {
-    "grant_type": "password",
-    "client_id": "client-id",
-    "client_secret": "client-secret",
-    "username": "john.conor@sky.net",
-    "password": "my-password",
-    "scope": "" // OPTIONAL
+    grant_type: "password",
+    client_id: "client-id",
+    client_secret: "client-secret",
+    username: "john.conor@sky.net",
+    password: "my-password",
+    scope: "" // OPTIONAL
 }
 ```
 
@@ -542,11 +555,11 @@ Request body example:
 
 ```typescript
 {
-    "name": "App Name",
-    "internal": true,
-    "redirectURIs": ["https://www.app_name.com/auth/callback"],
-    "clientProfile": "user-agent-based",
-    "scope": "read:users list:users edit:users"
+    name: "App Name",
+    internal: true,
+    redirectURIs: ["https://www.app_name.com/auth/callback"],
+    clientProfile: "user-agent-based",
+    scope: "read:users list:users edit:users"
 }
 ```
 
@@ -562,11 +575,11 @@ Request body example:
 
 ```typescript
 {
-    "client_id": "client-id",
-    "redirect_uri": "http://example.com/callback",
-    "response_type": "token",
-    "scope": "", // OPTIONAL
-    "state": "state" // OPTIONAL but highly recommended
+    client_id: "client-id",
+    redirect_uri: "http://example.com/callback",
+    response_type: "token",
+    scope: "", // OPTIONAL
+    state: "state" // OPTIONAL but highly recommended
 }
 ```
 
@@ -603,11 +616,11 @@ Request body example:
 
 ```typescript
 {
-    "name": "App Name",
-    "internal": true, // must be true for client credentials grant
-    "redirectURIs": ["https://www.app_name.com/auth/callback"],
-    "clientProfile": "web", // must be web for client credentials grant
-    "scope": "*"
+    name: "App Name",
+    internal: true, // must be true for client credentials grant
+    redirectURIs: ["https://www.app_name.com/auth/callback"],
+    clientProfile: "web", // must be web for client credentials grant
+    scope: "*"
 }
 ```
 
@@ -623,10 +636,10 @@ Request body example:
 
 ```typescript
 {
-    "grant_type": "client_credentials",
-    "client_id": "client-id",
-    "client_secret": "client-secret",
-    "scope": "client-requested-scope" // OPTIONAL
+    grant_type: "client_credentials",
+    client_id: "client-id",
+    client_secret: "client-secret",
+    scope: "client-requested-scope" // OPTIONAL
 }
 ```
 
@@ -668,11 +681,11 @@ Token generated with some grants as Password Credentials Grant and Authorization
 
 ```typescript
 {
-    "grant_type": "refresh_token",
-    "refresh_token": "the-refresh-token",
-    "client_id": "client-id",
-    "client_secret": "client-secret",
-    "scope": "client-requested-scope" // OPTIONAL
+    grant_type: "refresh_token",
+    refresh_token: "the-refresh-token",
+    client_id: "client-id",
+    client_secret: "client-secret",
+    scope: "client-requested-scope" // OPTIONAL
 }
 ```
 
@@ -741,7 +754,7 @@ While initializing the provider, there is a property called `securityMiddlewares
 ```typescript
 {
     // ... other initialization properties
-    "securityMiddlewares": [
+    securityMiddlewares: [
         // other middlewares
         Oauth.authorize('create:clients list:clients purge:tokens purge:codes'),
         // other middlewares
