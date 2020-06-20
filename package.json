@@ -1,7 +1,7 @@
 {
-  "name": "@noreajs/oauth-v2-provider-mongoose",
+  "name": "@noreajs/oauth-v2-provider-me",
   "version": "0.0.1-7",
-  "description": "Oauth 2 Provider using a MongoDB database and Express",
+  "description": "Oauth 2 Provider for Node.js using MongoDB and Express",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/noreajs/oauth-v2-provider-mongoose.git"
+    "url": "git+https://github.com/noreajs/oauth-v2-provider-me.git"
   },
   "keywords": [
     "oauth",
@@ -31,9 +31,9 @@
   "author": "Arnold L.",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/noreajs/oauth-v2-provider-mongoose/issues"
+    "url": "https://github.com/noreajs/oauth-v2-provider-me/issues"
   },
-  "homepage": "https://github.com/noreajs/oauth-v2-provider-mongoose#readme",
+  "homepage": "https://github.com/noreajs/oauth-v2-provider-me#readme",
   "devDependencies": {
     "@noreajs/core": "^1.1.0-8",
     "copyfiles": "^2.3.0",
