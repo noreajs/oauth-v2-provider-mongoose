@@ -1,10 +1,10 @@
-# Oauth v2 Provider (experimental)
+# Oauth v2 Provider ME (MongoDB + Express) - Experimental
 
 When you develop your APIs, you need to secure the resources they will offer. The Oauth 2 framework offers a safe and secure way to achieve this.
 
 This package is an OAuth 2.0 Authorization Server with [mongoose](<[https://mongoosejs.com/](https://mongoosejs.com/)>), [Express](<[https://expressjs.com/fr/](https://expressjs.com/fr/)>) and [EJS](<[https://ejs.co/](https://ejs.co/)>).
 
-While developing app using **MEAN** _(MongoDB + Express+ Angular + Node.js)_, **MERN** _(MongoDB + Express+ React.js + Node.js)_ or globallyf **ME\*N** stack you can use this package to host a Oauth 2 server.
+While developing app using **MEAN** _(MongoDB + Express+ Angular + Node.js)_, **MERN** _(MongoDB + Express+ React.js + Node.js)_ or globally **ME\*N** stack you can use this package to host a Oauth 2 server.
 
 **Table of Contents**
 
