@@ -3,6 +3,7 @@ import { mongooseModel } from "@noreajs/mongoose";
 import { Schema, Document, HookNextFunction } from "mongoose";
 import { Arr, Obj } from "@noreajs/common";
 import OauthScope from "./OauthScope";
+import oauthScopeProvider from "../providers/oauth-scope.provider";
 
 export interface IOauthAccessToken extends Document {
   userId: string;
@@ -67,30 +68,9 @@ export default mongooseModel<IOauthAccessToken>({
       next: HookNextFunction
     ) {
       /**
-       * Verify scopes
+       * Verify missing scopes
        */
-      if (this.scope) {
-        const scopes = this.scope.split(" ");
-
-        const oauthScopes = await OauthScope.find({
-          name: { $in: scopes },
-        });
-
-        // missing scopes
-        const missingScopes = Arr.missing(
-          scopes,
-          Obj.pluck(oauthScopes, "name")
-        );
-
-        if (missingScopes.length !== 0) {
-          next({
-            name: "Scope validation failed",
-            message: `Missing or not yet created ${
-              missingScopes.length == 1 ? "scope" : "scopes"
-            }: ${missingScopes.join(", ")}.`,
-          });
-        }
-      }
+      await oauthScopeProvider.validateScopesHook(this.scope, next);
     });
   },
 });

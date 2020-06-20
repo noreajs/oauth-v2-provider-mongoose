@@ -5,6 +5,7 @@ import validator from "validator";
 import { IAuthorizationResponseType } from "../interfaces/IAuthCodeRequest";
 import OauthScope from "./OauthScope";
 import { Arr, Obj } from "@noreajs/common";
+import oauthScopeProvider from "../providers/oauth-scope.provider";
 
 export interface IOauthAuthCode extends Document {
   userId: string;
@@ -103,30 +104,9 @@ export default mongooseModel<IOauthAuthCode>({
      */
     schema.pre<IOauthAuthCode>("save", async function (next: HookNextFunction) {
       /**
-       * Verify scopes
+       * Verify missing scopes
        */
-      if (this.scope) {
-        const scopes = this.scope.split(" ");
-
-        const oauthScopes = await OauthScope.find({
-          name: { $in: scopes },
-        });
-
-        // missing scopes
-        const missingScopes = Arr.missing(
-          scopes,
-          Obj.pluck(oauthScopes, "name")
-        );
-
-        if (missingScopes.length !== 0) {
-          next({
-            name: "Scope validation failed",
-            message: `Missing or not yet created ${
-              missingScopes.length == 1 ? "scope" : "scopes"
-            }: ${missingScopes.join(", ")}.`,
-          });
-        }
-      }
+      await oauthScopeProvider.validateScopesHook(this.scope, next);
     });
   },
 });

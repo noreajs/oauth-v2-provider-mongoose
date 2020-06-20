@@ -10,6 +10,7 @@ import UtilsHelper from "../helpers/UtilsHelper";
 import OauthContext from "../OauthContext";
 import OauthScope from "./OauthScope";
 import { Arr, Obj } from "@noreajs/common";
+import oauthScopeProvider from "../providers/oauth-scope.provider";
 
 export type OauthClientType = "confidential" | "public";
 export type OauthClientProfileType = "web" | "user-agent-based" | "native";
@@ -438,30 +439,9 @@ export default mongooseModel<IOauthClient>({
      */
     sc.pre<IOauthClient>("save", async function (next: HookNextFunction) {
       /**
-       * Verify scopes
+       * Verify missing scopes
        */
-      if (this.scope) {
-        const scopes = this.scope.split(" ");
-
-        const oauthScopes = await OauthScope.find({
-          name: { $in: scopes },
-        });
-
-        // missing scopes
-        const missingScopes = Arr.missing(
-          scopes,
-          Obj.pluck(oauthScopes, "name")
-        );
-
-        if (missingScopes.length !== 0) {
-          next({
-            name: "Scope validation failed",
-            message: `Missing or not yet created ${
-              missingScopes.length == 1 ? "scope" : "scopes"
-            }: ${missingScopes.join(", ")}.`,
-          });
-        }
-      }
+      await oauthScopeProvider.validateScopesHook(this.scope, next);
     });
   },
 });
