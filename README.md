@@ -28,7 +28,7 @@ While developing app using **MEAN** _(MongoDB + Express+ Angular + Node.js)_, **
 Installation command
 
 ```typescript
-npm  install @noreajs/oauth-v2-provider-mongoose --save
+npm  install @noreajs/oauth-v2-provider-me --save
 ```
 
 The package already content it's types definition.
@@ -103,7 +103,7 @@ Initialization with common Node.js + Express example
 
 ```typescript
 import express from "express";
-import { Oauth, IEndUserAuthData, JwtTokenReservedClaimsType } from "@noreajs/oauth-v2-provider-mongoose";
+import { Oauth, IEndUserAuthData, JwtTokenReservedClaimsType } from "@noreajs/oauth-v2-provider-me";
 
 const app = express();
 
@@ -734,7 +734,7 @@ Oauth.authorize(scope?: string | undefined): (req: Request, res: Response, next:
 Import `Oauth` 
 
 ```typescript
-import { Oauth } from "@noreajs/oauth-v2-provider-mongoose";
+import { Oauth } from "@noreajs/oauth-v2-provider-me";
 
 // app is an express application or express router
 app.route('/account/update').put([
@@ -795,7 +795,7 @@ The Mongoose models used by the package are accessible. You can use them as you 
 You can import these models as follows:
 
 ``` typescript
-import { /* model_name*/ } from "@noreajs/oauth-v2-provider-mongoose"
+import { /* model_name*/ } from "@noreajs/oauth-v2-provider-me"
 ```
 
 
