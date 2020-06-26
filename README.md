@@ -745,6 +745,44 @@ app.route('/account/update').put([
 ]);
 ```
 
+### Verify a token manually
+
+In some use cases, you can recover the access token on your own. There is a method that allows you to verify a token: `Oauth.verifyToken`.
+
+**Example**
+
+```typescript
+import { Oauth } from "@noreajs/oauth-v2-provider-me";
+
+// Token example
+const accessToken = "euiaoejsjflsdfhoiuezioueiz.ieaoufisdfosdfusdfksdlkfjdkfjs.skdjflksdfjls";
+
+Oauth.verifyToken(accessToken, (userId, lookupData) => {
+	// userId : current user id
+    // lookupData: current user data if the lookup method has been defined while initializing Oauth. 
+    // lookupData is undefined for client_credentials grant
+    next();
+}, (reason: string, authError: boolean) => {
+    // reason: is the description of the error
+    if (authError) {
+        // Authorization error
+    } else {
+        // internal error (e.g. Oauth 2 Server has not been initialized yet)
+    }
+}, scope)
+
+```
+
+**Method prototype** (Typescript)
+
+```typescript
+Oauth.verifyToken(token: string, success: (userId: string, lookupData?: any) => Promise<void> | void, error: (reason: string, authError: boolean) => Promise<void> | void, scope?: string | undefined): Promise<void>
+```
+
+
+
+
+
 ### Secure Oauth 2 endpoints
 
 While initializing the provider, there is a property called `securityMiddlewares`. Once your app if fully functional and ready for production you can secure Oauth 2 endpoints *(Client management endpoints, purge endpoints)*.
