@@ -1,4 +1,4 @@
-# Oauth v2 Provider ME (MongoDB + Express) - Experimental
+# Oauth v2 Provider ME (MongoDB + Express)
 
 When you develop your APIs, you need to secure the resources they will offer. The Oauth 2 framework offers a safe and secure way to achieve this.
 
@@ -36,6 +36,10 @@ The package already content it's types definition.
 
 
 ## Configuration
+
+
+
+### Initialization
 
 The provider is initialize with a simple function.
 
@@ -129,6 +133,83 @@ app.listen(3000, function () {
     console.log('Example Oauth 2 server listening on port 3000!')
 })
 ```
+
+
+
+### Session
+
+This package uses [Express session](https://github.com/expressjs/session#readme) for session management during authentication operations. You can initialize Express session session in two ways.
+
+**Before Oauth initialization**
+
+```typescript
+import express from "express";
+import session from "express-session";
+
+const app = express();
+
+// inject session
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+}))
+
+// initialize oauth now
+```
+
+**During Oauth initialization**
+
+```typescript
+import express from "express";
+import { Oauth } from "@noreajs/oauth-v2-provider-me";
+
+const app = express();
+
+// initialize Oauth v2 provider
+Oauth.init(app, {
+    providerName: "Your App Name",
+    // ...some options
+}, {
+    sessionOptions: {
+        resave: false,
+        saveUninitialized: true,
+        cookie: { secure: true }
+	}
+});
+```
+
+**Session Store Implementation**
+
+[Express-session](https://github.com/expressjs/session#readme) middleware stores session data on the server; it only saves the session ID in the cookie itself, but not the session data. By default, it uses memory storage and is not designed for a production environment. In production, you will need to configure a scalable session store.
+
+MongoDB session store example - [MongoDBStore](https://github.com/mongodb-js/connect-mongodb-session#readme)
+
+```typescript
+import express from "express";
+import session from "express-session";
+import mongodbSession from "connect-mongodb-session";
+
+const MongoDBStore = mongodbSession(session);
+
+const app = express();
+
+// inject session
+app.use(session({
+    secret: 'keyboard cat',
+    // ... some options
+    // mongoDB store session initialization
+    store: new MongoDBStore({
+        uri: 'mongodb://localhost:27017/connect_mongodb_session_test',
+        collection: 'mySessions'
+    })
+}))
+
+// initialize oauth now
+```
+
+[See the list of other compatible session stores](https://github.com/expressjs/session#compatible-session-stores)
 
 
 
