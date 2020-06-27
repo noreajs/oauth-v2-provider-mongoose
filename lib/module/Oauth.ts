@@ -3,10 +3,12 @@ import { IOauthContext } from "./interfaces/IOauthContext";
 import oauthRoutes from "./routes/oauth.routes";
 import OauthContext from "./OauthContext";
 import jwt from "jsonwebtoken";
-import session from "express-session";
 import { IJwtTokenPayload } from "./interfaces/IJwt";
 import OauthAccessToken from "./models/OauthAccessToken";
 import { HttpStatus, replaceAllMatch } from "@noreajs/common";
+import IOauthInitMethodParams from "./interfaces/IOauthInitMethodParams";
+import session from "express-session";
+import colors from "colors";
 
 export default class Oauth {
   static ERRORS = {
@@ -45,37 +47,99 @@ export default class Oauth {
   context: OauthContext;
   app: Application;
 
-  private constructor(app: Application, context: OauthContext) {
+  /**
+   * Oauth constructor
+   * @param app express application
+   * @param context oauth context
+   * @param params optional params
+   */
+  private constructor(
+    app: Application,
+    context: OauthContext,
+    params?: IOauthInitMethodParams
+  ) {
     // express app
     this.app = app;
     // oauth provider context
     this.context = context;
     // initialize oauth instance
-    this.initialize();
+    this.initialize(params);
   }
 
   /**
    * Initialize oauth instance
+   * @param params optional params
    */
-  private initialize() {
-    // set session
-    this.app.use(
-      session({
-        secret: this.context.secretKey,
-        resave: false,
-        saveUninitialized: true,
-        name: `${replaceAllMatch(
-          this.context.providerName.toLocaleLowerCase(),
-          /\s/g,
-          "-"
-        )}.sid`,
-        cookie: {
-          httpOnly: true,
-          secure: this.app.get("env") === "production",
-          maxAge: 1000 * 60 * 60, // 1 hour
-        },
-      })
-    );
+  private initialize(params?: IOauthInitMethodParams) {
+    /**
+     * Watch session existance
+     */
+    this.app.use((req, res, next) => {
+      /**
+       * Check session existance
+       */
+      if (!req.session) {
+        console.log(
+          colors.red("Oauth v2 provider server warning - Express session")
+        );
+        console.log(
+          colors.yellow(
+            "An express session is required for the proper functioning of the package. The sessionOptions attribute in the third parameter of the Oauth.init method is required."
+          )
+        );
+        console.log(
+          colors.green(
+            "You can also initialize Express session before initializing Oauth."
+          )
+        );
+        next("Express session configuration is required.");
+      } else {
+        next();
+      }
+    });
+
+    /**
+     * Set session if defined
+     */
+    if (params && params.sessionOptions) {
+      this.app.use(
+        session({
+          secret: params.sessionOptions.secret ?? this.context.secretKey,
+          resave: params.sessionOptions.resave ?? false,
+          saveUninitialized: params.sessionOptions.saveUninitialized ?? true,
+          name:
+            params.sessionOptions.name ??
+            `${replaceAllMatch(
+              this.context.providerName.toLocaleLowerCase(),
+              /\s/g,
+              "-"
+            )}.sid`,
+          cookie: params.sessionOptions.cookie ?? {
+            httpOnly: true,
+            secure: this.app.get("env") === "production",
+            maxAge: 1000 * 60 * 60, // 1 hour
+          },
+          store: params.sessionOptions.store,
+        })
+      );
+
+      /**
+       * Notification about a potential vulnerability
+       */
+      if (
+        this.app.get("env") === "production" &&
+        !params.sessionOptions.store
+      ) {
+        console.log(
+          colors.red("Oauth v2 provider server warning - Express session")
+        );
+        console.log(
+          colors.yellow(
+            "Session IDs are stored in memory and this is not optimal for a production environment. Set a session store in sessionOptions while initializing the package."
+          )
+        );
+      }
+    }
 
     // set the view engine to ejs
     this.app.set("view engine", "ejs");
@@ -93,11 +157,17 @@ export default class Oauth {
 
   /**
    * Initialize oauth 2 module
+   * @param app express application
    * @param context oauth 2 context
+   * @param params optional params
    */
-  static init(app: Application, initContext: IOauthContext) {
+  static init(
+    app: Application,
+    initContext: IOauthContext,
+    params?: IOauthInitMethodParams
+  ) {
     // create context
-    Oauth.instance = new Oauth(app, new OauthContext(initContext));
+    Oauth.instance = new Oauth(app, new OauthContext(initContext), params);
   }
 
   /**

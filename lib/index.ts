@@ -13,6 +13,7 @@ export {
   JwtTokenStandardClaimType,
 } from "./module/interfaces/IJwt";
 export { default as IEndUserAuthData } from "./module/interfaces/IEndUserAuthData";
+export { default as IOauthInitMethodParams } from "./module/interfaces/IOauthInitMethodParams";
 
 /**
  * Models exports

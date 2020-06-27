@@ -5,7 +5,6 @@ import { HttpStatus, checkRequiredKeys } from "@noreajs/common";
 import UrlHelper from "../helpers/UrlHelper";
 import OauthAuthCode, { IOauthAuthCode } from "../models/OauthAuthCode";
 import moment from "moment";
-import UtilsHelper from "../helpers/UtilsHelper";
 import path from "path";
 import OauthHelper from "../helpers/OauthHelper";
 import OauthController from "./oauth.controller";
