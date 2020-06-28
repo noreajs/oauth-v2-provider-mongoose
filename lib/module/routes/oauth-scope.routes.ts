@@ -1,13 +1,13 @@
 import OauthContext from "../OauthContext";
 import OauthScopeController from "../controllers/oauth-scope.controller";
-import express, { Router } from "express";
+import { Router } from "express";
 
 export default (module: Router, oauthContext: OauthContext) => {
   /**
    * Oauth scopes routes
    * *********************************
    */
-  const scopeModule = express.Router({
+  const scopeModule = Router({
     mergeParams: true,
   });
 

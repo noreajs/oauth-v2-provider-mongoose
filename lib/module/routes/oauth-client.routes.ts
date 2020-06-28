@@ -1,13 +1,13 @@
 import oauthClientController from "../controllers/oauth-client.controller";
 import OauthContext from "../OauthContext";
-import express, { Router } from "express";
+import { Router } from "express";
 
 export default (module: Router, oauthContext: OauthContext) => {
   /**
    * Oauth clients routes
    * *********************************
    */
-  const clientModule = express.Router({
+  const clientModule = Router({
     mergeParams: true,
   });
 

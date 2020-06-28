@@ -1,4 +1,4 @@
-import express, { Application } from "express";
+import { Application, Router } from "express";
 import oauthController from "../controllers/oauth.controller";
 import oauthClientRoutes from "./oauth-client.routes";
 import authorizationRoutes from "./authorization.routes";
@@ -11,7 +11,7 @@ export default (app: Application, oauthContext: OauthContext) => {
   /**
    * Auth routes
    */
-  const oauthModule = express.Router({
+  const oauthModule = Router({
     mergeParams: true,
   });
 
