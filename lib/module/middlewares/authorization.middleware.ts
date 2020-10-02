@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import IAuthCodeRequest from "../interfaces/IAuthCodeRequest";
-import UtilsHelper from "../helpers/UtilsHelper";
 import OauthClient from "../models/OauthClient";
 import OauthHelper from "../helpers/OauthHelper";
-import { checkRequiredKeys } from "@noreajs/common";
+import { Obj } from "@noreajs/common";
 
 class AuthorizationMiddleware {
   /**
@@ -20,7 +19,7 @@ class AuthorizationMiddleware {
       /**
        * Required parameters
        */
-      const requiredParameters = checkRequiredKeys<IAuthCodeRequest>(
+      const requiredParameters = Obj.missingKeys<IAuthCodeRequest>(
         ["response_type", "redirect_uri", "client_id"],
         data
       );

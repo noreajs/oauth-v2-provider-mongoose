@@ -75,6 +75,7 @@ class AuthorizationController extends OauthController {
           );
         } else {
           return res.render(authLoginPath, {
+            csrfToken: req.csrfToken(),
             providerName: this.oauthContext.providerName,
             currentYear: new Date().getFullYear(),
             formAction: `${UrlHelper.getFullUrl(req)}/${
