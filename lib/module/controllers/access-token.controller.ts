@@ -1,15 +1,12 @@
 import { Request, Response } from "express";
 import ITokenRequest from "../interfaces/ITokenRequest";
 import OauthHelper from "../helpers/OauthHelper";
-import { HttpStatus } from "@noreajs/common";
 import OauthClient from "../models/OauthClient";
 import TokenGrantAuthorizationCodeHelper from "../helpers/TokenGrantAuthorizationCodeHelper";
 import TokenGrantClientCredentialsHelper from "../helpers/TokenGrantClientCredentialsHelper";
 import TokenGrantPasswordCredentialsHelper from "../helpers/TokenGrantPasswordCredentialsHelper";
 import TokenGrantRefreshTokenHelper from "../helpers/TokenGrantRefreshTokenHelper";
 import OauthController from "./oauth.controller";
-import OauthAccessToken from "../models/OauthAccessToken";
-import OauthAuthCode from "../models/OauthAuthCode";
 
 class AccessTokenController extends OauthController {
   /**
