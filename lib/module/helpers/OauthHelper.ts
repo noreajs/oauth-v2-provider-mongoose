@@ -50,7 +50,7 @@ class OauthHelper {
     const authorization =
       request.headers["authorization"] ??
       request.headers["proxy-authorization"];
-    if (!authorization) {
+    if (!authorization || !authorization.startsWith("Basic")) {
       return undefined;
     } else {
       const base64Key = authorization.replace("Basic ", "");
@@ -64,11 +64,7 @@ class OauthHelper {
     }
   }
 
-  jwtSign(
-    req: Request,
-    oauthContext: OauthContext,
-    claims: IJwtTokenPayload
-  ) {
+  jwtSign(req: Request, oauthContext: OauthContext, claims: IJwtTokenPayload) {
     return sign(claims, oauthContext.secretKey, {
       algorithm: oauthContext.jwtAlgorithm,
       issuer: UrlHelper.getFullUrl(req),

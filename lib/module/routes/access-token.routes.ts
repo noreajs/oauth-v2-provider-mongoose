@@ -7,4 +7,11 @@ export default (module: Router, oauthContext: OauthContext) => {
    * Get token
    */
   module.route("/token").post([new accessTokenController(oauthContext).token]);
+
+  /**
+   * Revoke token
+   */
+  module
+    .route("/revoke")
+    .post([new accessTokenController(oauthContext).revoke]);
 };

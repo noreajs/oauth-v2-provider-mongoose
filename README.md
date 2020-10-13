@@ -18,6 +18,8 @@ While developing app using **MEAN** _(MongoDB + Express+ Angular + Node.js)_, **
   - [x] Password Grant
 - [RFC7636 - Proof Key for Code Exchange (PKCE)](https://tools.ietf.org/html/rfc7636))
   - [x] Authorization code with PKCE
+- [RFC 7009 - Oauth 2 Token Revocation](https://tools.ietf.org/html/rfc7009)
+  - [x] Token Revocation
 - [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html)
   - [ ] ID Token `(soon)`
 
@@ -767,6 +769,33 @@ Token generated with some grants as Password Credentials Grant and Authorization
     client_id: "client-id",
     client_secret: "client-secret",
     scope: "client-requested-scope" // OPTIONAL
+}
+```
+
+> **Note**: _client_id_ and _client_secret_ can be sent via Basic authorization header and not in the request body.
+>
+> _Authorization: Basic {BASE64URL-ENCODE(client_id:client_secret)}_
+
+
+
+## Revoke Token
+
+Refresh token and Access token can be revoked, In case you would like to disconnect a user.
+
+**Refresh token**
+
+* HTTP Method: **POST**
+
+* Endpoint: **{YOUR_API_BASE_URL}/oauth/v2/revoke**
+
+* Query body:
+
+```typescript
+{
+    token_type_hint?: "refresh_token", // or "access_token";
+  	token: "the-token",
+  	client_id: "client-id", // OPTIONAL
+  	client_secret: "client-secret" // OPTIONAL
 }
 ```
 

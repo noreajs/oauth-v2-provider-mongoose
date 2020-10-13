@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import IAuthCodeRequest from "../interfaces/IAuthCodeRequest";
 import { IOauthClient } from "../models/OauthClient";
-import { HttpStatus, checkRequiredKeys } from "@noreajs/common";
+import { HttpStatus, Obj } from "@noreajs/common";
 import UrlHelper from "../helpers/UrlHelper";
 import OauthAuthCode, { IOauthAuthCode } from "../models/OauthAuthCode";
 import moment from "moment";
@@ -190,7 +190,7 @@ class AuthorizationController extends OauthController {
         `${UrlHelper.getFullUrl(req)}/${this.OAUTH_DIALOG_PATH}`
       );
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return OauthHelper.throwError(req, res, {
         error: "server_error",
         error_description:
@@ -221,7 +221,7 @@ class AuthorizationController extends OauthController {
     if (oauthCode) {
       try {
         // checking required field
-        const requiredFields = checkRequiredKeys<any>(
+        const requiredFields = Obj.missingKeys<any>(
           ["username", "password"],
           formData
         );
@@ -299,7 +299,7 @@ class AuthorizationController extends OauthController {
           }
         );
       } catch (e) {
-        console.log(e);
+        console.error(e);
         return OauthHelper.throwError(req, res, {
           error: "server_error",
           error_description:

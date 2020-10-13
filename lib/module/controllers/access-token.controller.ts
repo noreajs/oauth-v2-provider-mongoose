@@ -7,6 +7,8 @@ import TokenGrantClientCredentialsHelper from "../helpers/TokenGrantClientCreden
 import TokenGrantPasswordCredentialsHelper from "../helpers/TokenGrantPasswordCredentialsHelper";
 import TokenGrantRefreshTokenHelper from "../helpers/TokenGrantRefreshTokenHelper";
 import OauthController from "./oauth.controller";
+import ITokenRevokeRequest from "../interfaces/ITokenRevokeRequest";
+import RevokeTokenHelper from "../helpers/RevokeTokenHelper";
 
 class AccessTokenController extends OauthController {
   /**
@@ -137,7 +139,90 @@ class AccessTokenController extends OauthController {
           });
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
+      return OauthHelper.throwError(req, res, {
+        error: "server_error",
+        error_description:
+          "The authorization server encountered an unexpected condition that prevented it from fulfilling the request.",
+      });
+    }
+  };
+
+  /**
+   * Revoke a token
+   * @param req request
+   * @param res response
+   */
+  revoke = async (req: Request, res: Response) => {
+    // request data
+    let data = req.body as ITokenRevokeRequest;
+
+    // get basic auth header credentials
+    let basicAuthCredentials = OauthHelper.getBasicAuthHeaderCredentials(req);
+
+    // update credential if exist
+    if (basicAuthCredentials) {
+      data.client_id = basicAuthCredentials.client_id;
+      data.client_secret = basicAuthCredentials.client_secret;
+    }
+
+    try {
+      if (!data.client_id) {
+        return OauthHelper.throwError(req, res, {
+          error: "invalid_request",
+          error_description:
+            "The client_id is required. You can send it with client_secret in body or via Basic Auth header.",
+        });
+      }
+
+      // load client
+      const client = await OauthClient.findOne({ clientId: data.client_id });
+
+      /**
+       * Client has to exist
+       */
+      if (!client) {
+        return OauthHelper.throwError(req, res, {
+          error: "invalid_client",
+          error_description: "Unknown client",
+        });
+      }
+
+      // Client revoked
+      if (client.revokedAt) {
+        return OauthHelper.throwError(req, res, {
+          error: "invalid_client",
+          error_description:
+            "The client related to this request has been revoked.",
+        });
+      }
+
+      if (client.clientType === "confidential" && !data.client_secret) {
+        return OauthHelper.throwError(req, res, {
+          error: "invalid_request",
+          error_description:
+            "The secret_secret is required for confidential client. You can send it with client_id in body or via Basic Auth header.",
+        });
+      }
+
+      /**
+       * Verify secret code if it exist
+       */
+      if (
+        data.client_secret &&
+        data.client_secret.length !== 0 &&
+        data.client_secret !== client.secretKey
+      ) {
+        return OauthHelper.throwError(req, res, {
+          error: "invalid_client",
+          error_description: "Invalid client secret.",
+        });
+      }
+
+      // Run revoke token helper
+      return RevokeTokenHelper.run(req, res, data, this.oauthContext);
+    } catch (e) {
+      console.error(e);
       return OauthHelper.throwError(req, res, {
         error: "server_error",
         error_description:

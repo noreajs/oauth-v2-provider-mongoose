@@ -9,7 +9,6 @@ import OauthRefreshToken, {
 import moment from "moment";
 import IToken from "../interfaces/IToken";
 import OauthHelper from "./OauthHelper";
-import UtilsHelper from "./UtilsHelper";
 import { IJwtTokenPayload } from "../interfaces/IJwt";
 import OauthContext from "../OauthContext";
 

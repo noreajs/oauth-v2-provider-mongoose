@@ -8,6 +8,7 @@ type IOauthErrorType =
   | "server_error"
   | "unsupported_grant_type"
   | "invalid_grant"
-  | "temporarily_unavailable";
+  | "temporarily_unavailable"
+  | "unsupported_token_type";
 
 export default IOauthErrorType;
