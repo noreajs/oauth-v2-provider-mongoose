@@ -14,6 +14,13 @@ export {
 } from "./module/interfaces/IJwt";
 export { default as IEndUserAuthData } from "./module/interfaces/IEndUserAuthData";
 export { default as IOauthInitMethodParams } from "./module/interfaces/IOauthInitMethodParams";
+export type { default as OauthStrategyGrantType } from "./module/interfaces/OauthStrategyGrantType";
+export type { default as OauthStrategyOptionsType } from "./module/interfaces/OauthStrategyOptionsType";
+
+/**
+ * Oauth v2 strategy export
+ */
+export { default as OauthStrategy } from "./module/strategy/OauthStrategy";
 
 /**
  * Models exports

@@ -5,6 +5,8 @@ import Oauth from "../module/Oauth";
 import IEndUserAuthData from "../module/interfaces/IEndUserAuthData";
 import { JwtTokenReservedClaimsType } from "../module/interfaces/IJwt";
 import User from "./models/User";
+import OauthStrategy from "../module/strategy/OauthStrategy";
+import OauthClient from "oauth-v2-client";
 
 const app = new NoreaBootstrap(apiRoutes, {
   appName: "Oauth V2 Test Server",
@@ -19,6 +21,29 @@ const app = new NoreaBootstrap(apiRoutes, {
         Oauth.init(app, {
           providerName: app.appName,
           secretKey: app.secretKey,
+          strategies: [
+            new OauthStrategy({
+              grant: "authorization_code",
+              identifier: "github",
+              client: new OauthClient({
+                oauthOptions: {
+                  clientId: "0cdfb323318a1ba34e34",
+                  clientSecret: "c058f92eaa08cab9af27689e4aaeee9c049410db",
+                  accessTokenUrl: "https://github.com/login/oauth/access_token",
+                  authUrl: "https://github.com/login/oauth/authorize",
+                },
+                requestOptions: {
+                  headers: {
+                    Accept: "application/json",
+                  },
+                },
+              }),
+              userLookup: (client) => {
+                // token
+                return undefined;
+              },
+            }),
+          ],
           authenticationLogic: async function (
             username: string,
             password: string

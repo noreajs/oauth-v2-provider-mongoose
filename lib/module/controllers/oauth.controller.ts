@@ -14,7 +14,7 @@ class OauthController {
    * @param req request
    * @param res response
    */
-  async callback(req: Request, res: Response) {
+  async forward(req: Request, res: Response) {
     return res.status(HttpStatus.Ok).json({
       query: req.query,
       body: req.body,

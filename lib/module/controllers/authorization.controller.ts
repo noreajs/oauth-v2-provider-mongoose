@@ -10,10 +10,12 @@ import OauthHelper from "../helpers/OauthHelper";
 import OauthController from "./oauth.controller";
 import ISessionCurrentData from "../interfaces/ISessionCurrentData";
 import AuthorizationHelper from "../helpers/AuthorizationHelper";
+import OauthStrategy from "../strategy/OauthStrategy";
 
 class AuthorizationController extends OauthController {
-  OAUTH_DIALOG_PATH = "oauth/v2/dialog";
-  OAUTH_AUTHORIZE_PATH = "oauth/v2/authorize";
+  static OAUTH_DIALOG_PATH = "oauth/v2/dialog";
+  static OAUTH_AUTHORIZE_PATH = "oauth/v2/authorize";
+  static OAUTH_STRATEGY_PATH = "oauth/v2/strategy/:identifier";
 
   /**
    * Get authorization dialog
@@ -74,15 +76,18 @@ class AuthorizationController extends OauthController {
             oauthCode.redirectUri
           );
         } else {
+          /**
+           * Render login page
+           */
           return res.render(authLoginPath, {
             csrfToken: req.csrfToken(),
             providerName: this.oauthContext.providerName,
             currentYear: new Date().getFullYear(),
             formAction: `${UrlHelper.getFullUrl(req)}/${
-              this.OAUTH_AUTHORIZE_PATH
+              AuthorizationController.OAUTH_AUTHORIZE_PATH
             }`,
             cancelUrl: `${UrlHelper.getFullUrl(req)}/${
-              this.OAUTH_DIALOG_PATH
+              AuthorizationController.OAUTH_DIALOG_PATH
             }?order=cancel`,
             error: payload.error,
             inputs: payload.inputs ?? {
@@ -99,6 +104,11 @@ class AuthorizationController extends OauthController {
               clientProfile: oauthCode.client.clientProfile,
               scope: oauthCode.client.scope,
             } as Partial<IOauthClient>,
+            strategies: OauthStrategy.renderOptions((identifier: string) => {
+              return `${UrlHelper.getFullUrl(req)}/${
+                AuthorizationController.OAUTH_STRATEGY_PATH
+              }`.replace(":identifier", identifier);
+            }, this.oauthContext.strategies),
           });
         }
       } else {
@@ -187,7 +197,7 @@ class AuthorizationController extends OauthController {
 
       return res.redirect(
         HttpStatus.TemporaryRedirect,
-        `${UrlHelper.getFullUrl(req)}/${this.OAUTH_DIALOG_PATH}`
+        `${UrlHelper.getFullUrl(req)}/${AuthorizationController.OAUTH_DIALOG_PATH}`
       );
     } catch (e) {
       console.error(e);
@@ -241,7 +251,7 @@ class AuthorizationController extends OauthController {
 
           return res.redirect(
             HttpStatus.MovedPermanently,
-            `${UrlHelper.getFullUrl(req)}/${this.OAUTH_DIALOG_PATH}`
+            `${UrlHelper.getFullUrl(req)}/${AuthorizationController.OAUTH_DIALOG_PATH}`
           );
         }
 
@@ -263,7 +273,7 @@ class AuthorizationController extends OauthController {
 
           return res.redirect(
             HttpStatus.MovedPermanently,
-            `${UrlHelper.getFullUrl(req)}/${this.OAUTH_DIALOG_PATH}`
+            `${UrlHelper.getFullUrl(req)}/${AuthorizationController.OAUTH_DIALOG_PATH}`
           );
         }
 

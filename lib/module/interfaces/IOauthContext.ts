@@ -1,6 +1,7 @@
 import IEndUserAuthData from "./IEndUserAuthData";
 import { JwtTokenReservedClaimsType } from "./IJwt";
 import { RequestHandler } from "express";
+import OauthStrategy from "../strategy/OauthStrategy";
 
 export type SubLookupFuncType = {
   (sub: string): any | Promise<any>;
@@ -8,14 +9,14 @@ export type SubLookupFuncType = {
 
 type ClientPartyType = {
   /**
-   * First-party applications: Applications controlled by the same organization 
+   * First-party applications: Applications controlled by the same organization
    */
   internal: number;
   /**
    * Third-party applications: external parties or partners
    */
   external: number;
-}
+};
 
 export type OauthExpiresInType = {
   /**
@@ -74,7 +75,7 @@ export interface IOauthContext {
 
   /**
    * Lookup the token owner and make his data available in Express response within the locals property.
-   * 
+   *
    * ```typescript
    * response.locals.user
    * ```
@@ -106,4 +107,9 @@ export interface IOauthContext {
    * Refresh Token Expiration Times
    */
   refreshTokenExpiresIn?: OauthExpiresInType;
+
+  /**
+   * Social strategies to integrate other oauth 2 provider, such as facebook, github, twitter etc
+   */
+  strategies?: Array<OauthStrategy>;
 }

@@ -6,6 +6,7 @@ import {
 import IEndUserAuthData from "./interfaces/IEndUserAuthData";
 import { JwtTokenReservedClaimsType } from "./interfaces/IJwt";
 import { RequestHandler } from "express";
+import { OauthStrategy } from "..";
 
 export default class OauthContext {
   providerName: string;
@@ -36,6 +37,7 @@ export default class OauthContext {
   authorizationCodeLifeTime: number;
   accessTokenExpiresIn: OauthExpiresInType;
   refreshTokenExpiresIn: OauthExpiresInType;
+  strategies: Array<OauthStrategy>;
 
   constructor(init: IOauthContext) {
     /**
@@ -70,5 +72,6 @@ export default class OauthContext {
     };
     this.secretKey = init.secretKey;
     this.tokenType = init.tokenType ?? "Bearer";
+    this.strategies = init.strategies ?? [];
   }
 }

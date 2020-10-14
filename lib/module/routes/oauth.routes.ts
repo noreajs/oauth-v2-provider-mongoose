@@ -6,6 +6,7 @@ import accessTokenRoutes from "./access-token.routes";
 import OauthContext from "../OauthContext";
 import oauthScopeRoutes from "./oauth-scope.routes";
 import purgeRoutes from "./purge.routes";
+import strategyRoutes from "./strategy.routes";
 
 export default (app: Application, oauthContext: OauthContext) => {
   /**
@@ -36,6 +37,11 @@ export default (app: Application, oauthContext: OauthContext) => {
   accessTokenRoutes(oauthModule, oauthContext);
 
   /**
+   * Strategy routes
+   */
+  strategyRoutes(oauthModule, oauthContext);
+
+  /**
    * Purge tokens and codes
    */
   purgeRoutes(oauthModule, oauthContext);
@@ -46,7 +52,7 @@ export default (app: Application, oauthContext: OauthContext) => {
    */
   oauthModule
     .route("/callback")
-    .get([new oauthController(oauthContext).callback]);
+    .get([new oauthController(oauthContext).forward]);
 
   /**
    * Inject oauth v2
