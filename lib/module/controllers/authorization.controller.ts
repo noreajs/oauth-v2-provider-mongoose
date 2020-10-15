@@ -24,13 +24,10 @@ class AuthorizationController extends OauthController {
    */
   dialog = async (req: Request, res: Response) => {
     // login path
-    const authLoginPath = path.join(
-      __dirname,
-      "..",
-      "views",
-      "login",
-      "login.ejs"
-    );
+    const authLoginPath =
+      this.oauthContext.loginPagePath.length !== 0
+        ? path.join(...this.oauthContext.loginPagePath)
+        : path.join(...[__dirname, "..", "views", "login", "login.ejs"]);
 
     if (req.session) {
       const payload = {
@@ -197,7 +194,9 @@ class AuthorizationController extends OauthController {
 
       return res.redirect(
         HttpStatus.TemporaryRedirect,
-        `${UrlHelper.getFullUrl(req)}/${AuthorizationController.OAUTH_DIALOG_PATH}`
+        `${UrlHelper.getFullUrl(req)}/${
+          AuthorizationController.OAUTH_DIALOG_PATH
+        }`
       );
     } catch (e) {
       console.error(e);
@@ -251,7 +250,9 @@ class AuthorizationController extends OauthController {
 
           return res.redirect(
             HttpStatus.MovedPermanently,
-            `${UrlHelper.getFullUrl(req)}/${AuthorizationController.OAUTH_DIALOG_PATH}`
+            `${UrlHelper.getFullUrl(req)}/${
+              AuthorizationController.OAUTH_DIALOG_PATH
+            }`
           );
         }
 
@@ -273,7 +274,9 @@ class AuthorizationController extends OauthController {
 
           return res.redirect(
             HttpStatus.MovedPermanently,
-            `${UrlHelper.getFullUrl(req)}/${AuthorizationController.OAUTH_DIALOG_PATH}`
+            `${UrlHelper.getFullUrl(req)}/${
+              AuthorizationController.OAUTH_DIALOG_PATH
+            }`
           );
         }
 

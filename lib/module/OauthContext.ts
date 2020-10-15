@@ -38,6 +38,7 @@ export default class OauthContext {
   accessTokenExpiresIn: OauthExpiresInType;
   refreshTokenExpiresIn: OauthExpiresInType;
   strategies: Array<OauthStrategy>;
+  loginPagePath: string[];
 
   constructor(init: IOauthContext) {
     /**
@@ -73,5 +74,6 @@ export default class OauthContext {
     this.secretKey = init.secretKey;
     this.tokenType = init.tokenType ?? "Bearer";
     this.strategies = init.strategies ?? [];
+    this.loginPagePath = init.loginPagePath ?? [];
   }
 }

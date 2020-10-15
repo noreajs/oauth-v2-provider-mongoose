@@ -112,4 +112,9 @@ export interface IOauthContext {
    * Social strategies to integrate other oauth 2 provider, such as facebook, github, twitter etc
    */
   strategies?: Array<OauthStrategy>;
+
+  /**
+   * Login page page path (ejs file)
+   */
+  loginPagePath?: string[];
 }
