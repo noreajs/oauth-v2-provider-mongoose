@@ -246,7 +246,7 @@ class StrategyController extends OauthController {
     const strategy = this.oauthContext.strategies.find(
       (s) => s.options.identifier === req.params.identifier
     );
-
+    console.log("strategy callback called", req.params.identifier);
     if (req.session) {
       /**
        * Load session auth code
@@ -323,7 +323,10 @@ class StrategyController extends OauthController {
         });
       }
     } else {
-      throw Error("No session defined. Express session required.");
+      return OauthHelper.throwError(req, res, {
+        error: "access_denied",
+        error_description: "No session defined. Express session required.",
+      });
     }
   };
 }
