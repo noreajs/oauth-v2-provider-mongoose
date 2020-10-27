@@ -36,12 +36,6 @@ class StrategyController extends OauthController {
         if (strategy) {
           switch (strategy.options.grant) {
             case "authorization_code":
-              console.log(
-                "redirect authorization_code",
-                `${UrlHelper.getFullUrl(req)}/${
-                  StrategyController.OAUTH_STRATEGY_CALLBACK_PATH
-                }`.replace(":identifier", strategy.options.identifier)
-              );
               return res.redirect(
                 HttpStatus.TemporaryRedirect,
                 strategy.options.client.authorizationCode.getAuthUri({
@@ -246,7 +240,7 @@ class StrategyController extends OauthController {
     const strategy = this.oauthContext.strategies.find(
       (s) => s.options.identifier === req.params.identifier
     );
-    console.log("strategy callback called", req.params.identifier);
+    
     if (req.session) {
       /**
        * Load session auth code
@@ -263,7 +257,6 @@ class StrategyController extends OauthController {
               await strategy.options.client.authorizationCode.getToken({
                 callbackUrl: req.originalUrl,
                 onSuccess: async (_token) => {
-                  console.log("authorization_code token", _token);
                   return this.lookupAndRedirect(req, res, authCode, strategy);
                 },
                 onError: (error) => {
