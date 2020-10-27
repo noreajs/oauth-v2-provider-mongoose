@@ -195,6 +195,7 @@ class StrategyController extends OauthController {
         state: authCode.state,
         scope: authCode.scope,
         response_type: authCode.responseType,
+        code: authCode.authorizationCode,
         code_challenge: authCode.codeChallenge,
         code_challenge_method: authCode.codeChallengeMethod,
         redirect_uri: authCode.redirectUri,
