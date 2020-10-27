@@ -75,10 +75,15 @@ class StrategyController extends OauthController {
         } else {
           return OauthHelper.throwError(req, res, {
             error: "access_denied",
-            error_description: "Authorization code instance not found.",
+            error_description: "Oauth v2 strategy not found.",
             state: authCode.state,
           });
         }
+      } else {
+        return OauthHelper.throwError(req, res, {
+          error: "access_denied",
+          error_description: "Authorization code instance not found.",
+        });
       }
     } else {
       throw Error("No session defined. Express session required.");
@@ -195,7 +200,6 @@ class StrategyController extends OauthController {
         state: authCode.state,
         scope: authCode.scope,
         response_type: authCode.responseType,
-        code: authCode.authorizationCode,
         code_challenge: authCode.codeChallenge,
         code_challenge_method: authCode.codeChallengeMethod,
         redirect_uri: authCode.redirectUri,
@@ -301,10 +305,15 @@ class StrategyController extends OauthController {
         } else {
           return OauthHelper.throwError(req, res, {
             error: "access_denied",
-            error_description: "Authorization code instance not found.",
+            error_description: "Oauth v2 strategy not found.",
             state: authCode.state,
           });
         }
+      } else {
+        return OauthHelper.throwError(req, res, {
+          error: "access_denied",
+          error_description: "Authorization code instance not found.",
+        });
       }
     } else {
       throw Error("No session defined. Express session required.");
