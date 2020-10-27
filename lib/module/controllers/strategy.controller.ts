@@ -249,7 +249,7 @@ class StrategyController extends OauthController {
         if (strategy) {
           switch (strategy.options.grant) {
             case "authorization_code":
-              strategy.options.client.authorizationCode.getToken({
+              await strategy.options.client.authorizationCode.getToken({
                 callbackUrl: req.originalUrl,
                 onSuccess: async () => {
                   return this.lookupAndRedirect(req, res, authCode, strategy);
@@ -267,7 +267,7 @@ class StrategyController extends OauthController {
               break;
 
             case "authorization_code_pkce":
-              strategy.options.client.authorizationCodePKCE.getToken({
+              await strategy.options.client.authorizationCodePKCE.getToken({
                 callbackUrl: req.originalUrl,
                 onSuccess: () => {
                   return this.lookupAndRedirect(req, res, authCode, strategy);
