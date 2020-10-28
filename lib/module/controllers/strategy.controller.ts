@@ -263,26 +263,36 @@ class StrategyController extends OauthController {
      * User exist
      */
     if (endUserData) {
-      /**
-       * Refresh session for next use, Save current user data
-       * **********************************************
-       */
-      req.session?.regenerate(function (err) {
-        if (err) {
-          throw Error("Failed to regenerate session.");
-        } else {
-          const currentData: ISessionCurrentData = {
-            responseType: authCode.responseType,
-            authData: endUserData,
-          };
+      const currentData: ISessionCurrentData = {
+        responseType: authCode.responseType,
+        authData: endUserData,
+      };
 
-          if (req.session) {
-            req.session.currentData = currentData;
-          } else {
-            throw Error("Unable to access to session");
-          }
-        }
-      });
+      if (req.session) {
+        req.session.currentData = currentData;
+      } else {
+        throw Error("Unable to access to session");
+      }
+      // /**
+      //  * Refresh session for next use, Save current user data
+      //  * **********************************************
+      //  */
+      // req.session?.regenerate(function (err) {
+      //   if (err) {
+      //     throw Error("Failed to regenerate session.");
+      //   } else {
+      //     const currentData: ISessionCurrentData = {
+      //       responseType: authCode.responseType,
+      //       authData: endUserData,
+      //     };
+
+      //     if (req.session) {
+      //       req.session.currentData = currentData;
+      //     } else {
+      //       throw Error("Unable to access to session");
+      //     }
+      //   }
+      // });
 
       /**
        * Redirect for internal token generation
@@ -290,11 +300,15 @@ class StrategyController extends OauthController {
        */
       const queryParams: any = {
         client_id: authCode.client.clientId,
-        state: authCode.state,
         scope: authCode.scope,
         response_type: authCode.responseType,
         redirect_uri: authCode.redirectUri,
       };
+
+      // inject if exist
+      if (authCode.state && authCode.state.length !== 0) {
+        queryParams.state = authCode.state;
+      }
 
       // inject if exist
       if (
