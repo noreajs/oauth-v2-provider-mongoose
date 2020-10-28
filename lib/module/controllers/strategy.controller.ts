@@ -1,4 +1,4 @@
-import { HttpStatus } from "@noreajs/common";
+import { HttpStatus, Obj } from "@noreajs/common";
 import { Request, Response } from "express";
 import OauthHelper from "../helpers/OauthHelper";
 import UrlHelper from "../helpers/UrlHelper";
@@ -288,15 +288,26 @@ class StrategyController extends OauthController {
        * Redirect for internal token generation
        * =============================================
        */
-      const queryParams = {
+      const queryParams: any = {
         client_id: authCode.client._id,
         state: authCode.state,
         scope: authCode.scope,
         response_type: authCode.responseType,
-        code_challenge: authCode.codeChallenge,
-        code_challenge_method: authCode.codeChallengeMethod,
         redirect_uri: authCode.redirectUri,
       };
+
+      // inject if exist
+      if (
+        authCode.codeChallengeMethod &&
+        authCode.codeChallengeMethod.length !== 0
+      ) {
+        queryParams.code_challenge_method = authCode.codeChallengeMethod;
+      }
+
+      // inject if exist
+      if (authCode.codeChallenge && authCode.codeChallenge.length !== 0) {
+        queryParams.code_challenge = authCode.codeChallenge;
+      }
 
       return res.redirect(
         HttpStatus.MovedPermanently,
