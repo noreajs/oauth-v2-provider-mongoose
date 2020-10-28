@@ -152,86 +152,6 @@ class StrategyController extends OauthController {
   };
 
   /**
-   * Lookup end user and redirect
-   * @param req express request
-   * @param res express response
-   * @param authCode authorization code instance
-   * @param strategy strategy
-   */
-  private async lookupAndRedirect(
-    req: Request,
-    res: Response,
-    authCode: IOauthAuthCode,
-    strategy: OauthStrategy
-  ) {
-    // lookup user
-    const endUserData = await strategy.userLookup(strategy.options.client);
-
-    /**
-     * User exist
-     */
-    if (endUserData) {
-      /**
-       * Refresh session for next use, Save current user data
-       * **********************************************
-       */
-      req.session?.regenerate(function (err) {
-        if (err) {
-          throw Error("Failed to regenerate session.");
-        } else {
-          const currentData: ISessionCurrentData = {
-            responseType: authCode.responseType,
-            authData: endUserData,
-          };
-
-          if (req.session) {
-            req.session.currentData = currentData;
-          } else {
-            throw Error("Unable to access to session");
-          }
-        }
-      });
-
-      /**
-       * Redirect for internal token generation
-       * =============================================
-       */
-      const queryParams = {
-        state: authCode.state,
-        scope: authCode.scope,
-        response_type: authCode.responseType,
-        code_challenge: authCode.codeChallenge,
-        code_challenge_method: authCode.codeChallengeMethod,
-        redirect_uri: authCode.redirectUri,
-      };
-
-      return res.redirect(
-        HttpStatus.MovedPermanently,
-        injectQueryParams(
-          AuthorizationController.OAUTH_AUTHORIZE_PATH,
-          queryParams
-        )
-      );
-    } else {
-      // add error
-      if (req.session) {
-        req.session.error = {
-          message: `No account is associated with your ${`${
-            strategy.options.providerName ?? strategy.options.identifier
-          }`.toLowerCase()} profile.`,
-        };
-      }
-
-      return res.redirect(
-        HttpStatus.TemporaryRedirect,
-        `${UrlHelper.getFullUrl(req)}/${
-          AuthorizationController.OAUTH_DIALOG_PATH
-        }`
-      );
-    }
-  }
-
-  /**
    * Get authorization token
    * @param req request
    * @param res response
@@ -240,7 +160,7 @@ class StrategyController extends OauthController {
     const strategy = this.oauthContext.strategies.find(
       (s) => s.options.identifier === req.params.identifier
     );
-    
+
     if (req.session) {
       /**
        * Load session auth code
@@ -322,6 +242,86 @@ class StrategyController extends OauthController {
       });
     }
   };
+
+  /**
+   * Lookup end user and redirect
+   * @param req express request
+   * @param res express response
+   * @param authCode authorization code instance
+   * @param strategy strategy
+   */
+  private async lookupAndRedirect(
+    req: Request,
+    res: Response,
+    authCode: IOauthAuthCode,
+    strategy: OauthStrategy
+  ) {
+    // lookup user
+    const endUserData = await strategy.userLookup(strategy.options.client);
+
+    /**
+     * User exist
+     */
+    if (endUserData) {
+      /**
+       * Refresh session for next use, Save current user data
+       * **********************************************
+       */
+      req.session?.regenerate(function (err) {
+        if (err) {
+          throw Error("Failed to regenerate session.");
+        } else {
+          const currentData: ISessionCurrentData = {
+            responseType: authCode.responseType,
+            authData: endUserData,
+          };
+
+          if (req.session) {
+            req.session.currentData = currentData;
+          } else {
+            throw Error("Unable to access to session");
+          }
+        }
+      });
+
+      /**
+       * Redirect for internal token generation
+       * =============================================
+       */
+      const queryParams = {
+        state: authCode.state,
+        scope: authCode.scope,
+        response_type: authCode.responseType,
+        code_challenge: authCode.codeChallenge,
+        code_challenge_method: authCode.codeChallengeMethod,
+        redirect_uri: authCode.redirectUri,
+      };
+
+      return res.redirect(
+        HttpStatus.MovedPermanently,
+        injectQueryParams(
+          AuthorizationController.OAUTH_AUTHORIZE_PATH,
+          queryParams
+        )
+      );
+    } else {
+      // add error
+      if (req.session) {
+        req.session.error = {
+          message: `No account is associated with your ${`${
+            strategy.options.providerName ?? strategy.options.identifier
+          }`.toLowerCase()} profile.`,
+        };
+      }
+
+      return res.redirect(
+        HttpStatus.TemporaryRedirect,
+        `${UrlHelper.getFullUrl(req)}/${
+          AuthorizationController.OAUTH_DIALOG_PATH
+        }`
+      );
+    }
+  }
 }
 
 export default StrategyController;
