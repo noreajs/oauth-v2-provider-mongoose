@@ -289,6 +289,7 @@ class StrategyController extends OauthController {
        * =============================================
        */
       const queryParams = {
+        client_id: authCode.client._id,
         state: authCode.state,
         scope: authCode.scope,
         response_type: authCode.responseType,
