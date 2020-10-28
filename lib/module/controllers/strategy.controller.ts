@@ -300,7 +300,9 @@ class StrategyController extends OauthController {
       return res.redirect(
         HttpStatus.MovedPermanently,
         injectQueryParams(
-          AuthorizationController.OAUTH_AUTHORIZE_PATH,
+          `${UrlHelper.getFullUrl(req)}/${
+            AuthorizationController.OAUTH_AUTHORIZE_PATH
+          }`,
           queryParams
         )
       );
