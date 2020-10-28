@@ -7,6 +7,7 @@ import UrlHelper from "./UrlHelper";
 import OauthHelper from "./OauthHelper";
 import IToken from "../interfaces/IToken";
 import OauthContext from "../OauthContext";
+import { HttpStatus } from "@noreajs/common";
 
 class AuthorizationHelper {
   static run = async function (
@@ -51,7 +52,7 @@ class AuthorizationHelper {
 
       const codeResponse = {
         code: authorizationCode,
-        state: oauthCode.state,
+        state: oauthCode.state ?? "",
       } as IAuthorizationResponse;
 
       return res.redirect(
@@ -73,10 +74,11 @@ class AuthorizationHelper {
         access_token: tokens.token,
         token_type: oauthContext.tokenType,
         expires_in: tokens.accessTokenExpireIn,
-        state: oauthCode.state,
+        state: oauthCode.state ?? "",
       } as IToken;
 
       return res.redirect(
+        HttpStatus.TemporaryRedirect,
         UrlHelper.injectQueryParams(oauthCode.redirectUri, authResponse)
       );
     } else {

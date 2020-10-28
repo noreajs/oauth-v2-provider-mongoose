@@ -273,26 +273,6 @@ class StrategyController extends OauthController {
       } else {
         throw Error("Unable to access to session");
       }
-      // /**
-      //  * Refresh session for next use, Save current user data
-      //  * **********************************************
-      //  */
-      // req.session?.regenerate(function (err) {
-      //   if (err) {
-      //     throw Error("Failed to regenerate session.");
-      //   } else {
-      //     const currentData: ISessionCurrentData = {
-      //       responseType: authCode.responseType,
-      //       authData: endUserData,
-      //     };
-
-      //     if (req.session) {
-      //       req.session.currentData = currentData;
-      //     } else {
-      //       throw Error("Unable to access to session");
-      //     }
-      //   }
-      // });
 
       /**
        * Redirect for internal token generation
