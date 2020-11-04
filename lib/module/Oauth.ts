@@ -179,8 +179,14 @@ export default class Oauth {
    */
   static async verifyToken(
     token: string,
-    success: (userId: string, lookupData?: any) => Promise<void> | void,
-    error: (reason: string, authError: boolean) => Promise<void> | void,
+    success: (
+      userId: string,
+      lookupData?: any
+    ) => Promise<Response<any> | void> | Response<any> | void,
+    error: (
+      reason: string,
+      authError: boolean
+    ) => Promise<Response<any> | void> | Response<any> | void,
     scope?: string
   ) {
     // get auth instance
@@ -202,7 +208,7 @@ export default class Oauth {
         if (accessToken) {
           // revocation state
           if (accessToken.revokedAt) {
-            error(Oauth.ERRORS.TOKEN_NOT_APPROVED, true);
+            return error(Oauth.ERRORS.TOKEN_NOT_APPROVED, true);
           } else {
             // lookup sub for other grant but client_credentials
             let user = undefined;
@@ -220,29 +226,29 @@ export default class Oauth {
               const scopeParts = scope.split(" ");
               for (const item of tokenScopeParts) {
                 if (!scopeParts.includes(item)) {
-                  error(Oauth.ERRORS.INSUFFICIENT_SCOPE, true);
+                  return error(Oauth.ERRORS.INSUFFICIENT_SCOPE, true);
                 }
               }
 
               // the user can access to the resource
-              success(accessToken.userId, user);
+              return success(accessToken.userId, user);
             } else {
               // the user can access to the resource
-              success(accessToken.userId, user);
+              return success(accessToken.userId, user);
             }
           }
         } else {
-          error(Oauth.ERRORS.INVALID_TOKEN, true);
+          return error(Oauth.ERRORS.INVALID_TOKEN, true);
         }
       } catch (err) {
-        error(Oauth.ERRORS.TOKEN_EXPIRED, true);
+        return error(Oauth.ERRORS.TOKEN_EXPIRED, true);
       }
     } else {
       console.warn(
         "The Oauth.context static property is not defined. Make sure you have initialized the Oauth package as described in the documentation."
       );
       // the user can access to the resource
-      error(Oauth.ERRORS.NO_INSTANCE, false);
+      return error(Oauth.ERRORS.NO_INSTANCE, false);
     }
   }
 
@@ -269,7 +275,7 @@ export default class Oauth {
             const parts = authorization.split(" ");
             try {
               // verify the token
-              await Oauth.verifyToken(
+              return await Oauth.verifyToken(
                 parts[1],
                 (userId, user) => {
                   res.locals.user = user;
@@ -278,10 +284,9 @@ export default class Oauth {
                 },
                 (reason: string, authError: boolean) => {
                   if (authError) {
-                    res.status(HttpStatus.Unauthorized).json({
+                    return res.status(HttpStatus.Unauthorized).json({
                       message: reason,
                     });
-                    return;
                   } else {
                     // continue
                     next();
