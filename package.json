@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@noreajs/common": "^1.0.3",
-    "@noreajs/mongoose": "0.0.18",
+    "@noreajs/mongoose": "0.1.0-1",
     "@types/body-parser": "^1.19.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/csurf": "^1.9.36",

@@ -92,9 +92,9 @@ export default class Oauth {
             "You can also initialize Express session before initializing Oauth."
           )
         );
-        next("Express session configuration is required.");
+        return next("Express session configuration is required.");
       } else {
-        next();
+        return next();
       }
     });
 
@@ -277,10 +277,10 @@ export default class Oauth {
               // verify the token
               return await Oauth.verifyToken(
                 parts[1],
-                (userId, user) => {
+                (_userId, user) => {
                   res.locals.user = user;
                   // continue
-                  next();
+                  return next();
                 },
                 (reason: string, authError: boolean) => {
                   if (authError) {
@@ -289,7 +289,7 @@ export default class Oauth {
                     });
                   } else {
                     // continue
-                    next();
+                    return next();
                   }
                 },
                 scope
@@ -314,7 +314,7 @@ export default class Oauth {
           "The Oauth.context static property is not defined. Make sure you have initialized the Oauth package as described in the documentation."
         );
         // the user can access to the resource
-        next();
+        return next();
       }
     };
   }
