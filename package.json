@@ -61,7 +61,7 @@
     "express-session": "^1.17.1",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.26.0",
-    "oauth-v2-client": "0.0.4",
+    "oauth-v2-client": "0.0.5",
     "rand-token": "^1.0.1",
     "serialize-error": "^7.0.1",
     "uuid": "^8.1.0",
