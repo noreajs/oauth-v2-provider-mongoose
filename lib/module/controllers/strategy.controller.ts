@@ -199,7 +199,9 @@ class StrategyController extends OauthController {
     const strategy = this.oauthContext.strategies.find(
       (s) => s.options.identifier === req.params.identifier
     );
-
+console.log({
+  strategyState: req.query.state as any,
+})
     /**
      * Load auth code
      */
