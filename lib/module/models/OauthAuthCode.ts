@@ -1,11 +1,9 @@
-import { IOauthClient } from "./OauthClient";
 import { mongooseModel } from "@noreajs/mongoose";
-import { Schema, Document, HookNextFunction } from "mongoose";
+import { Document, HookNextFunction, Schema } from "mongoose";
 import validator from "validator";
 import { IAuthorizationResponseType } from "../interfaces/IAuthCodeRequest";
-import OauthScope from "./OauthScope";
-import { Arr, Obj } from "@noreajs/common";
 import oauthScopeProvider from "../providers/oauth-scope.provider";
+import { IOauthClient } from "./OauthClient";
 
 export interface IOauthAuthCode extends Document {
   userId: string;

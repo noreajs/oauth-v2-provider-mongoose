@@ -199,9 +199,7 @@ class StrategyController extends OauthController {
     const strategy = this.oauthContext.strategies.find(
       (s) => s.options.identifier === req.params.identifier
     );
-console.log({
-  strategyState: req.query.state as any,
-})
+
     /**
      * Load auth code
      */
@@ -308,7 +306,8 @@ console.log({
       return OauthHelper.throwError(req, res, {
         error: "access_denied",
         error_description: "Authorization code instance not found.",
-      });
+        strategy_state: req.query.state
+      }as any);
     }
   };
 
