@@ -74,51 +74,39 @@ class AuthorizationController extends OauthController {
           );
         } else {
           /**
-           * Strategy shortcut
+           * Render login page
            */
-          if (req.query.strategy && `${req.query.strategy}`.length !== 0) {
-            return res.redirect(
-              HttpStatus.MovedPermanently,
-              `${UrlHelper.getFullUrl(req)}/${
+          return res.render(authLoginPath, {
+            csrfToken: req.csrfToken(),
+            providerName: this.oauthContext.providerName,
+            currentYear: new Date().getFullYear(),
+            formAction: `${UrlHelper.getFullUrl(req)}/${
+              AuthorizationController.OAUTH_AUTHORIZE_PATH
+            }`,
+            cancelUrl: `${UrlHelper.getFullUrl(req)}/${
+              AuthorizationController.OAUTH_DIALOG_PATH
+            }?order=cancel`,
+            error: payload.error,
+            inputs: payload.inputs ?? {
+              username: "",
+              password: "",
+            },
+            client: {
+              name: oauthCode.client.name,
+              domaine: oauthCode.client.domaine,
+              logo: oauthCode.client.logo,
+              description: oauthCode.client.description,
+              internal: oauthCode.client.internal,
+              clientType: oauthCode.client.clientType,
+              clientProfile: oauthCode.client.clientProfile,
+              scope: oauthCode.client.scope,
+            } as Partial<IOauthClient>,
+            strategies: OauthStrategy.renderOptions((identifier: string) => {
+              return `${UrlHelper.getFullUrl(req)}/${
                 AuthorizationController.OAUTH_STRATEGY_PATH
-              }`.replace(":identifier", req.query.strategy as string)
-            );
-          } else {
-            /**
-             * Render login page
-             */
-            return res.render(authLoginPath, {
-              csrfToken: req.csrfToken(),
-              providerName: this.oauthContext.providerName,
-              currentYear: new Date().getFullYear(),
-              formAction: `${UrlHelper.getFullUrl(req)}/${
-                AuthorizationController.OAUTH_AUTHORIZE_PATH
-              }`,
-              cancelUrl: `${UrlHelper.getFullUrl(req)}/${
-                AuthorizationController.OAUTH_DIALOG_PATH
-              }?order=cancel`,
-              error: payload.error,
-              inputs: payload.inputs ?? {
-                username: "",
-                password: "",
-              },
-              client: {
-                name: oauthCode.client.name,
-                domaine: oauthCode.client.domaine,
-                logo: oauthCode.client.logo,
-                description: oauthCode.client.description,
-                internal: oauthCode.client.internal,
-                clientType: oauthCode.client.clientType,
-                clientProfile: oauthCode.client.clientProfile,
-                scope: oauthCode.client.scope,
-              } as Partial<IOauthClient>,
-              strategies: OauthStrategy.renderOptions((identifier: string) => {
-                return `${UrlHelper.getFullUrl(req)}/${
-                  AuthorizationController.OAUTH_STRATEGY_PATH
-                }`.replace(":identifier", identifier);
-              }, this.oauthContext.strategies),
-            });
-          }
+              }`.replace(":identifier", identifier);
+            }, this.oauthContext.strategies),
+          });
         }
       } else {
         return OauthHelper.throwError(req, res, {
@@ -204,12 +192,25 @@ class AuthorizationController extends OauthController {
         throw Error("No session defined. Express session required.");
       }
 
-      return res.redirect(
-        HttpStatus.TemporaryRedirect,
-        `${UrlHelper.getFullUrl(req)}/${
-          AuthorizationController.OAUTH_DIALOG_PATH
-        }`
-      );
+      /**
+       * Strategy shortcut
+       * ------------------------
+       */
+      if (req.query.strategy && `${req.query.strategy}`.length !== 0) {
+        return res.redirect(
+          HttpStatus.MovedPermanently,
+          `${UrlHelper.getFullUrl(req)}/${
+            AuthorizationController.OAUTH_STRATEGY_PATH
+          }`.replace(":identifier", req.query.strategy as string)
+        );
+      } else {
+        return res.redirect(
+          HttpStatus.TemporaryRedirect,
+          `${UrlHelper.getFullUrl(req)}/${
+            AuthorizationController.OAUTH_DIALOG_PATH
+          }`
+        );
+      }
     } catch (e) {
       console.error(e);
       return OauthHelper.throwError(req, res, {
