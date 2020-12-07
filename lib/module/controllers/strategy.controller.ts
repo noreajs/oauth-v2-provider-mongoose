@@ -8,7 +8,7 @@ import OauthAuthCode, { IOauthAuthCode } from "../models/OauthAuthCode";
 import OauthStrategy from "../strategy/OauthStrategy";
 import AuthorizationController from "./authorization.controller";
 import OauthController from "./oauth.controller";
-import uuid from "uuid";
+import { v4 as uuidV4 } from "uuid";
 
 class StrategyController extends OauthController {
   static OAUTH_STRATEGY_CALLBACK_PATH =
@@ -39,7 +39,7 @@ class StrategyController extends OauthController {
          * -------------------
          */
         // set strategy state
-        authCode.strategyState = uuid.v4();
+        authCode.strategyState = uuidV4();
         // save change
         await authCode.save();
 
