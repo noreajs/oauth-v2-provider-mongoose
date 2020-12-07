@@ -198,7 +198,7 @@ class AuthorizationController extends OauthController {
        */
       if (req.query.strategy && `${req.query.strategy}`.length !== 0) {
         return res.redirect(
-          HttpStatus.MovedPermanently,
+          HttpStatus.TemporaryRedirect,
           `${UrlHelper.getFullUrl(req)}/${
             AuthorizationController.OAUTH_STRATEGY_PATH
           }`.replace(":identifier", req.query.strategy as string)
