@@ -2,7 +2,7 @@ import ITokenRequest from "../interfaces/ITokenRequest";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { IOauthClient } from "../models/OauthClient";
-import { HttpStatus, checkRequiredKeys } from "@noreajs/common";
+import { HttpStatus, checkRequiredKeys, Obj } from "@noreajs/common";
 import OauthRefreshToken, {
   IOauthRefreshToken,
 } from "../models/OauthRefreshToken";
@@ -48,7 +48,7 @@ class TokenGrantRefreshTokenHelper {
 
       // Check if refresh token is within the request
       if (
-        checkRequiredKeys<ITokenRequest>(["refresh_token"], data)
+        Obj.missingKeys<ITokenRequest>(["refresh_token"], data)
           .length !== 0
       ) {
         return OauthHelper.throwError(req, res, {

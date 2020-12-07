@@ -367,25 +367,10 @@ class StrategyController extends OauthController {
         scope: authCode.scope,
         response_type: authCode.responseType,
         redirect_uri: authCode.redirectUri,
+        state: authCode.state,
+        code_challenge_method: authCode.codeChallengeMethod,
+        code_challenge: authCode.codeChallenge
       };
-
-      // inject if exist
-      if (authCode.state && authCode.state.length !== 0) {
-        queryParams.state = authCode.state;
-      }
-
-      // inject if exist
-      if (
-        authCode.codeChallengeMethod &&
-        authCode.codeChallengeMethod.length !== 0
-      ) {
-        queryParams.code_challenge_method = authCode.codeChallengeMethod;
-      }
-
-      // inject if exist
-      if (authCode.codeChallenge && authCode.codeChallenge.length !== 0) {
-        queryParams.code_challenge = authCode.codeChallenge;
-      }
 
       return res.redirect(
         HttpStatus.MovedPermanently,
@@ -393,7 +378,7 @@ class StrategyController extends OauthController {
           `${UrlHelper.getFullUrl(req)}/${
             AuthorizationController.OAUTH_AUTHORIZE_PATH
           }`,
-          queryParams
+          Obj.cleanWithEmpty(queryParams)
         )
       );
     } else {

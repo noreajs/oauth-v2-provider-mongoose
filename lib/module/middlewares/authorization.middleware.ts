@@ -152,7 +152,6 @@ class AuthorizationMiddleware {
       // continue the request
       next();
     } catch (e) {
-      console.log(e);
       return OauthHelper.throwError(
         req,
         res,
@@ -161,6 +160,7 @@ class AuthorizationMiddleware {
           error_description:
             "The authorization server encountered an unexpected condition that prevented it from fulfilling the request.",
           state: data.state,
+          extra: e,
         },
         data.redirect_uri
       );

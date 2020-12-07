@@ -6,4 +6,5 @@ export default interface IOauthError {
   error_uri?: string;
   scope?: string;
   state?: string;
+  extra?:any
 }
