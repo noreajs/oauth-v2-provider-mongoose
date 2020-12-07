@@ -77,11 +77,11 @@ class TokenGrantClientCredentialsHelper {
         });
       }
     } catch (error) {
-      console.log(error);
       return OauthHelper.throwError(req, res, {
         error: "server_error",
         error_description:
           "The authorization server encountered an unexpected condition that prevented it from fulfilling the request.",
+        extra: error,
       });
     }
   }

@@ -111,8 +111,7 @@ class AuthorizationController extends OauthController {
       } else {
         return OauthHelper.throwError(req, res, {
           error: "server_error",
-          error_description:
-            "The authorization server encountered an unexpected condition that prevented it from fulfilling the request.",
+          error_description: "Authorization code instance not found.",
         });
       }
     } else {
@@ -121,6 +120,9 @@ class AuthorizationController extends OauthController {
         error: "server_error",
         error_description:
           "The authorization server encountered an unexpected condition that prevented it from fulfilling the request.",
+        extra: {
+          message: "Express session is missing",
+        },
       });
     }
   };
@@ -212,12 +214,12 @@ class AuthorizationController extends OauthController {
         );
       }
     } catch (e) {
-      console.error(e);
       return OauthHelper.throwError(req, res, {
         error: "server_error",
         error_description:
           "The authorization server encountered an unexpected condition that prevented it from fulfilling the request.",
         state: data.state,
+        extra: e,
       });
     }
   };
@@ -325,12 +327,12 @@ class AuthorizationController extends OauthController {
           }
         );
       } catch (e) {
-        console.error(e);
         return OauthHelper.throwError(req, res, {
           error: "server_error",
           error_description:
             "The authorization server encountered an unexpected condition that prevented it from fulfilling the request.",
           state: oauthCode.state,
+          extra: e,
         });
       }
     } else {

@@ -48,8 +48,7 @@ class TokenGrantRefreshTokenHelper {
 
       // Check if refresh token is within the request
       if (
-        Obj.missingKeys<ITokenRequest>(["refresh_token"], data)
-          .length !== 0
+        Obj.missingKeys<ITokenRequest>(["refresh_token"], data).length !== 0
       ) {
         return OauthHelper.throwError(req, res, {
           error: "invalid_request",
@@ -184,11 +183,11 @@ class TokenGrantRefreshTokenHelper {
         });
       }
     } catch (error) {
-      console.log(error)
       return OauthHelper.throwError(req, res, {
         error: "server_error",
         error_description:
           "The authorization server encountered an unexpected condition that prevented it from fulfilling the request.",
+        extra: error,
       });
     }
   }

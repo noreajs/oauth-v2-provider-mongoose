@@ -92,7 +92,7 @@ class RevokeTokenHelper {
               error_description: `Invalid access token. client_id does not match.`,
             });
           }
-          
+
           // refresh token doesn't exist
           if (
             accessToken &&
@@ -200,11 +200,11 @@ class RevokeTokenHelper {
 
       return res.status(HttpStatus.Ok).send();
     } catch (error) {
-      console.log(error);
       return OauthHelper.throwError(req, res, {
         error: "server_error",
         error_description:
           "The authorization server encountered an unexpected condition that prevented it from fulfilling the request.",
+        extra: error,
       });
     }
   }

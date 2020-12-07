@@ -139,11 +139,11 @@ class AccessTokenController extends OauthController {
           });
       }
     } catch (e) {
-      console.error(e);
       return OauthHelper.throwError(req, res, {
         error: "server_error",
         error_description:
           "The authorization server encountered an unexpected condition that prevented it from fulfilling the request.",
+        extra: e,
       });
     }
   };
@@ -222,11 +222,11 @@ class AccessTokenController extends OauthController {
       // Run revoke token helper
       return RevokeTokenHelper.run(req, res, data, this.oauthContext);
     } catch (e) {
-      console.error(e);
       return OauthHelper.throwError(req, res, {
         error: "server_error",
         error_description:
           "The authorization server encountered an unexpected condition that prevented it from fulfilling the request.",
+        extra: e,
       });
     }
   };
