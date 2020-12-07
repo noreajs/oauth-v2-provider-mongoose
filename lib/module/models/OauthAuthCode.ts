@@ -12,6 +12,7 @@ export interface IOauthAuthCode extends Document {
   authorizationCode: string;
   client: IOauthClient;
   state?: string;
+  strategyState?:string;
   scope: string;
   responseType: IAuthorizationResponseType;
   codeChallenge?: string;
@@ -54,6 +55,9 @@ export default mongooseModel<IOauthAuthCode>({
         autopopulate: true,
       },
       state: {
+        type: Schema.Types.String,
+      },
+      strategyState: {
         type: Schema.Types.String,
       },
       scope: {

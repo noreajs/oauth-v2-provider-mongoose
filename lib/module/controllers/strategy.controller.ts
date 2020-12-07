@@ -1,13 +1,14 @@
 import { HttpStatus, Obj } from "@noreajs/common";
 import { Request, Response } from "express";
+import { injectQueryParams } from "oauth-v2-client";
 import OauthHelper from "../helpers/OauthHelper";
 import UrlHelper from "../helpers/UrlHelper";
 import ISessionCurrentData from "../interfaces/ISessionCurrentData";
 import OauthAuthCode, { IOauthAuthCode } from "../models/OauthAuthCode";
 import OauthStrategy from "../strategy/OauthStrategy";
-import OauthController from "./oauth.controller";
-import { injectQueryParams } from "oauth-v2-client";
 import AuthorizationController from "./authorization.controller";
+import OauthController from "./oauth.controller";
+import uuid from "uuid";
 
 class StrategyController extends OauthController {
   static OAUTH_STRATEGY_CALLBACK_PATH =
@@ -33,12 +34,23 @@ class StrategyController extends OauthController {
 
       // auth code exist
       if (authCode) {
+        /**
+         * Strategy state
+         * -------------------
+         */
+        // set strategy state
+        authCode.strategyState = uuid.v4();
+        // save change
+        await authCode.save();
+
+        // strategy exists
         if (strategy) {
           switch (strategy.options.grant) {
             case "authorization_code":
               return res.redirect(
                 HttpStatus.TemporaryRedirect,
                 strategy.options.client.authorizationCode.getAuthUri({
+                  state: authCode.strategyState,
                   callbackUrl: `${UrlHelper.getFullUrl(req)}/${
                     StrategyController.OAUTH_STRATEGY_CALLBACK_PATH
                   }`.replace(":identifier", strategy.options.identifier),
@@ -49,6 +61,7 @@ class StrategyController extends OauthController {
               return res.redirect(
                 HttpStatus.TemporaryRedirect,
                 strategy.options.client.authorizationCodePKCE.getAuthUri({
+                  state: authCode.strategyState,
                   callbackUrl: `${UrlHelper.getFullUrl(req)}/${
                     StrategyController.OAUTH_STRATEGY_CALLBACK_PATH
                   }`.replace(":identifier", strategy.options.identifier),
@@ -59,6 +72,7 @@ class StrategyController extends OauthController {
               return res.redirect(
                 HttpStatus.TemporaryRedirect,
                 strategy.options.client.implicit.getAuthUri({
+                  state: authCode.strategyState,
                   callbackUrl: `${UrlHelper.getFullUrl(req)}/${
                     StrategyController.OAUTH_STRATEGY_CALLBACK_PATH
                   }`.replace(":identifier", strategy.options.identifier),
@@ -83,7 +97,7 @@ class StrategyController extends OauthController {
             res,
             {
               error: "access_denied",
-              error_description: "Oauth v2 strategy not found.",
+              error_description: `Oauth v2 strategy ${req.params.identifier} not found.`,
               state: authCode.state,
             },
             authCode.redirectUri
@@ -186,17 +200,30 @@ class StrategyController extends OauthController {
       (s) => s.options.identifier === req.params.identifier
     );
 
-    if (req.session) {
-      /**
-       * Load session auth code
-       */
-      const authCode = await OauthAuthCode.findById(
-        req.session.oauthAuthCodeId
-      );
+    /**
+     * Load auth code
+     */
+    const authCode = await OauthAuthCode.findOne({
+      strategyState: req.query.state as any,
+    });
 
-      // auth code exist
-      if (authCode) {
-        if (strategy) {
+    // auth code exist
+    if (authCode) {
+      // strategy exits
+      if (strategy) {
+        /**
+         * Authentication failed
+         * --------------------------
+         */
+        if (Object.keys(req.query).includes("error")) {
+          // return the error
+          return OauthHelper.throwError(
+            req,
+            res,
+            Obj.merge(req.query, { state: authCode.state }, "right"),
+            authCode.redirectUri
+          );
+        } else {
           switch (strategy.options.grant) {
             case "authorization_code":
               await strategy.options.client.authorizationCode.getToken({
@@ -262,28 +289,23 @@ class StrategyController extends OauthController {
                 authCode.redirectUri
               );
           }
-        } else {
-          return OauthHelper.throwError(
-            req,
-            res,
-            {
-              error: "access_denied",
-              error_description: "Oauth v2 strategy not found.",
-              state: authCode.state,
-            },
-            authCode.redirectUri
-          );
         }
       } else {
-        return OauthHelper.throwError(req, res, {
-          error: "access_denied",
-          error_description: "Authorization code instance not found.",
-        });
+        return OauthHelper.throwError(
+          req,
+          res,
+          {
+            error: "access_denied",
+            error_description: `Oauth v2 strategy ${req.params.identifier} not found.`,
+            state: authCode.state,
+          },
+          authCode.redirectUri
+        );
       }
     } else {
       return OauthHelper.throwError(req, res, {
         error: "access_denied",
-        error_description: "No session defined. Express session required.",
+        error_description: "Authorization code instance not found.",
       });
     }
   };
