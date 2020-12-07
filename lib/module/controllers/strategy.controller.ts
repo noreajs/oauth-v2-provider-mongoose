@@ -66,18 +66,28 @@ class StrategyController extends OauthController {
               );
 
             default:
-              return OauthHelper.throwError(req, res, {
-                error: "access_denied",
-                error_description: `The grant "${strategy.options.grant}" doesn't support redirection.`,
-                state: authCode.state,
-              });
+              return OauthHelper.throwError(
+                req,
+                res,
+                {
+                  error: "access_denied",
+                  error_description: `The grant "${strategy.options.grant}" doesn't support redirection.`,
+                  state: authCode.state,
+                },
+                authCode.redirectUri
+              );
           }
         } else {
-          return OauthHelper.throwError(req, res, {
-            error: "access_denied",
-            error_description: "Oauth v2 strategy not found.",
-            state: authCode.state,
-          });
+          return OauthHelper.throwError(
+            req,
+            res,
+            {
+              error: "access_denied",
+              error_description: "Oauth v2 strategy not found.",
+              state: authCode.state,
+            },
+            authCode.redirectUri
+          );
         }
       } else {
         return OauthHelper.throwError(req, res, {
@@ -120,30 +130,45 @@ class StrategyController extends OauthController {
                   return this.lookupAndRedirect(req, res, authCode, strategy);
                 },
                 onError: (error) => {
-                  return OauthHelper.throwError(req, res, {
-                    error: "access_denied",
-                    error_description:
-                      error.message ??
-                      `Failed to get ${strategy.options.identifier} token.`,
-                    state: authCode.state,
-                  });
+                  return OauthHelper.throwError(
+                    req,
+                    res,
+                    {
+                      error: "access_denied",
+                      error_description:
+                        error.message ??
+                        `Failed to get ${strategy.options.identifier} token.`,
+                      state: authCode.state,
+                    },
+                    authCode.redirectUri
+                  );
                 },
               });
               break;
 
             default:
-              return OauthHelper.throwError(req, res, {
-                error: "access_denied",
-                error_description: `The grant "${strategy.options.grant}" doesn't support redirection.`,
-                state: authCode.state,
-              });
+              return OauthHelper.throwError(
+                req,
+                res,
+                {
+                  error: "access_denied",
+                  error_description: `The grant "${strategy.options.grant}" doesn't support redirection.`,
+                  state: authCode.state,
+                },
+                authCode.redirectUri
+              );
           }
         } else {
-          return OauthHelper.throwError(req, res, {
-            error: "access_denied",
-            error_description: "Authorization code instance not found.",
-            state: authCode.state,
-          });
+          return OauthHelper.throwError(
+            req,
+            res,
+            {
+              error: "access_denied",
+              error_description: "Authorization code instance not found.",
+              state: authCode.state,
+            },
+            authCode.redirectUri
+          );
         }
       }
     } else {
@@ -180,13 +205,18 @@ class StrategyController extends OauthController {
                   return this.lookupAndRedirect(req, res, authCode, strategy);
                 },
                 onError: (error) => {
-                  return OauthHelper.throwError(req, res, {
-                    error: "access_denied",
-                    error_description:
-                      error.message ??
-                      `Failed to get ${strategy.options.identifier} token.`,
-                    state: authCode.state,
-                  });
+                  return OauthHelper.throwError(
+                    req,
+                    res,
+                    {
+                      error: "access_denied",
+                      error_description:
+                        error.message ??
+                        `Failed to get ${strategy.options.identifier} token.`,
+                      state: authCode.state,
+                    },
+                    authCode.redirectUri
+                  );
                 },
               });
               break;
@@ -198,13 +228,18 @@ class StrategyController extends OauthController {
                   return this.lookupAndRedirect(req, res, authCode, strategy);
                 },
                 onError: (error) => {
-                  return OauthHelper.throwError(req, res, {
-                    error: "access_denied",
-                    error_description:
-                      error.message ??
-                      `Failed to get ${strategy.options.identifier} token.`,
-                    state: authCode.state,
-                  });
+                  return OauthHelper.throwError(
+                    req,
+                    res,
+                    {
+                      error: "access_denied",
+                      error_description:
+                        error.message ??
+                        `Failed to get ${strategy.options.identifier} token.`,
+                      state: authCode.state,
+                    },
+                    authCode.redirectUri
+                  );
                 },
               });
               break;
@@ -216,18 +251,28 @@ class StrategyController extends OauthController {
               return this.lookupAndRedirect(req, res, authCode, strategy);
 
             default:
-              return OauthHelper.throwError(req, res, {
-                error: "access_denied",
-                error_description: `The grant "${strategy.options.grant}" doesn't support redirection.`,
-                state: authCode.state,
-              });
+              return OauthHelper.throwError(
+                req,
+                res,
+                {
+                  error: "access_denied",
+                  error_description: `The grant "${strategy.options.grant}" doesn't support redirection.`,
+                  state: authCode.state,
+                },
+                authCode.redirectUri
+              );
           }
         } else {
-          return OauthHelper.throwError(req, res, {
-            error: "access_denied",
-            error_description: "Oauth v2 strategy not found.",
-            state: authCode.state,
-          });
+          return OauthHelper.throwError(
+            req,
+            res,
+            {
+              error: "access_denied",
+              error_description: "Oauth v2 strategy not found.",
+              state: authCode.state,
+            },
+            authCode.redirectUri
+          );
         }
       } else {
         return OauthHelper.throwError(req, res, {

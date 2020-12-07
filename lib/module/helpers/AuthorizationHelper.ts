@@ -56,7 +56,7 @@ class AuthorizationHelper {
       } as IAuthorizationResponse;
 
       return res.redirect(
-        HttpStatus.PermanentRedirect,
+        HttpStatus.MovedPermanently,
         UrlHelper.injectQueryParams(oauthCode.redirectUri, codeResponse)
       );
     } else if (oauthCode.responseType === "token") {
