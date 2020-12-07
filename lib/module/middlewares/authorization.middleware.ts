@@ -104,8 +104,8 @@ class AuthorizationMiddleware {
             error_description:
               "Given redirect uri is not in the client redirect URIs",
             state: data.state,
-          }
-          // data.redirect_uri
+          },
+          data.redirect_uri
         );
       }
 
@@ -153,12 +153,17 @@ class AuthorizationMiddleware {
       next();
     } catch (e) {
       console.log(e);
-      return OauthHelper.throwError(req, res, {
-        error: "server_error",
-        error_description:
-          "The authorization server encountered an unexpected condition that prevented it from fulfilling the request.",
-        state: data.state,
-      });
+      return OauthHelper.throwError(
+        req,
+        res,
+        {
+          error: "server_error",
+          error_description:
+            "The authorization server encountered an unexpected condition that prevented it from fulfilling the request.",
+          state: data.state,
+        },
+        data.redirect_uri
+      );
     }
   }
 }
