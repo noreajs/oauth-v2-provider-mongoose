@@ -104,10 +104,16 @@ class StrategyController extends OauthController {
           );
         }
       } else {
+        try {
+          // destroy the session
+          req.session.destroy(() => {});
+        } catch (error) {}
+
         return OauthHelper.throwError(req, res, {
           error: "access_denied",
           error_description: "Authorization code instance not found.",
-        });
+          method: "redirect",
+        } as any);
       }
     } else {
       throw Error("No session defined. Express session required.");
@@ -306,8 +312,8 @@ class StrategyController extends OauthController {
       return OauthHelper.throwError(req, res, {
         error: "access_denied",
         error_description: "Authorization code instance not found.",
-        strategy_state: req.query.state
-      }as any);
+        strategy_state: req.query.state,
+      } as any);
     }
   };
 
