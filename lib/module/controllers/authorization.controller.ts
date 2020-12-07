@@ -74,39 +74,51 @@ class AuthorizationController extends OauthController {
           );
         } else {
           /**
-           * Render login page
+           * Strategy shortcut
            */
-          return res.render(authLoginPath, {
-            csrfToken: req.csrfToken(),
-            providerName: this.oauthContext.providerName,
-            currentYear: new Date().getFullYear(),
-            formAction: `${UrlHelper.getFullUrl(req)}/${
-              AuthorizationController.OAUTH_AUTHORIZE_PATH
-            }`,
-            cancelUrl: `${UrlHelper.getFullUrl(req)}/${
-              AuthorizationController.OAUTH_DIALOG_PATH
-            }?order=cancel`,
-            error: payload.error,
-            inputs: payload.inputs ?? {
-              username: "",
-              password: "",
-            },
-            client: {
-              name: oauthCode.client.name,
-              domaine: oauthCode.client.domaine,
-              logo: oauthCode.client.logo,
-              description: oauthCode.client.description,
-              internal: oauthCode.client.internal,
-              clientType: oauthCode.client.clientType,
-              clientProfile: oauthCode.client.clientProfile,
-              scope: oauthCode.client.scope,
-            } as Partial<IOauthClient>,
-            strategies: OauthStrategy.renderOptions((identifier: string) => {
-              return `${UrlHelper.getFullUrl(req)}/${
+          if (req.query.strategy) {
+            return res.redirect(
+              HttpStatus.MovedPermanently,
+              `${UrlHelper.getFullUrl(req)}/${
                 AuthorizationController.OAUTH_STRATEGY_PATH
-              }`.replace(":identifier", identifier);
-            }, this.oauthContext.strategies),
-          });
+              }`.replace(":identifier", req.query.strategy as string)
+            );
+          } else {
+            /**
+             * Render login page
+             */
+            return res.render(authLoginPath, {
+              csrfToken: req.csrfToken(),
+              providerName: this.oauthContext.providerName,
+              currentYear: new Date().getFullYear(),
+              formAction: `${UrlHelper.getFullUrl(req)}/${
+                AuthorizationController.OAUTH_AUTHORIZE_PATH
+              }`,
+              cancelUrl: `${UrlHelper.getFullUrl(req)}/${
+                AuthorizationController.OAUTH_DIALOG_PATH
+              }?order=cancel`,
+              error: payload.error,
+              inputs: payload.inputs ?? {
+                username: "",
+                password: "",
+              },
+              client: {
+                name: oauthCode.client.name,
+                domaine: oauthCode.client.domaine,
+                logo: oauthCode.client.logo,
+                description: oauthCode.client.description,
+                internal: oauthCode.client.internal,
+                clientType: oauthCode.client.clientType,
+                clientProfile: oauthCode.client.clientProfile,
+                scope: oauthCode.client.scope,
+              } as Partial<IOauthClient>,
+              strategies: OauthStrategy.renderOptions((identifier: string) => {
+                return `${UrlHelper.getFullUrl(req)}/${
+                  AuthorizationController.OAUTH_STRATEGY_PATH
+                }`.replace(":identifier", identifier);
+              }, this.oauthContext.strategies),
+            });
+          }
         }
       } else {
         return OauthHelper.throwError(req, res, {
