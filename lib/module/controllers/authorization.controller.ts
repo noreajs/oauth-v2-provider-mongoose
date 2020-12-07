@@ -76,7 +76,7 @@ class AuthorizationController extends OauthController {
           /**
            * Strategy shortcut
            */
-          if (req.query.strategy) {
+          if (req.query.strategy && `${req.query.strategy}`.length !== 0) {
             return res.redirect(
               HttpStatus.MovedPermanently,
               `${UrlHelper.getFullUrl(req)}/${
