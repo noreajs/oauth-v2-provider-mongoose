@@ -174,44 +174,46 @@ class AuthorizationController extends OauthController {
       // save codes
       await oauthCode.save();
 
-      // set session
+      // session exists
       if (req.session) {
-        // current user
-        const currentData: ISessionCurrentData = req.session.currentData;
+        // clear session
+        req.session.oauthAuthCodeId = oauthCode._id;
 
-        if (currentData) {
-          return await AuthorizationHelper.run(
-            req,
-            res,
-            this.oauthContext,
-            oauthCode,
-            currentData
+        /**
+         * Strategy shortcut
+         * ------------------------
+         */
+        if (req.query.strategy && `${req.query.strategy}`.length !== 0) {
+          return res.redirect(
+            HttpStatus.TemporaryRedirect,
+            `${UrlHelper.getFullUrl(req)}/${
+              AuthorizationController.OAUTH_STRATEGY_PATH
+            }`.replace(":identifier", req.query.strategy as string)
           );
         } else {
-          req.session.oauthAuthCodeId = oauthCode._id;
+          // current user
+          const currentData: ISessionCurrentData = req.session.currentData;
+
+          if (currentData) {
+            // redirect authorization code
+            return await AuthorizationHelper.run(
+              req,
+              res,
+              this.oauthContext,
+              oauthCode,
+              currentData
+            );
+          } else {
+            return res.redirect(
+              HttpStatus.TemporaryRedirect,
+              `${UrlHelper.getFullUrl(req)}/${
+                AuthorizationController.OAUTH_DIALOG_PATH
+              }`
+            );
+          }
         }
       } else {
         throw Error("No session defined. Express session required.");
-      }
-
-      /**
-       * Strategy shortcut
-       * ------------------------
-       */
-      if (req.query.strategy && `${req.query.strategy}`.length !== 0) {
-        return res.redirect(
-          HttpStatus.TemporaryRedirect,
-          `${UrlHelper.getFullUrl(req)}/${
-            AuthorizationController.OAUTH_STRATEGY_PATH
-          }`.replace(":identifier", req.query.strategy as string)
-        );
-      } else {
-        return res.redirect(
-          HttpStatus.TemporaryRedirect,
-          `${UrlHelper.getFullUrl(req)}/${
-            AuthorizationController.OAUTH_DIALOG_PATH
-          }`
-        );
       }
     } catch (e) {
       return OauthHelper.throwError(req, res, {
