@@ -20,21 +20,22 @@ class StrategyController extends OauthController {
    * @param res response
    */
   redirect = async (req: Request, res: Response) => {
-    // load strategy
-    const strategy = this.oauthContext.strategies.find(
-      (s) => s.options.identifier === req.params.identifier
-    );
+    // session exists
+    if (req.session) {
+      // load strategy
+      const strategy = this.oauthContext.strategies.find(
+        (s) => s.options.identifier === req.params.identifier
+      );
 
-    // strategy exists
-    if (strategy) {
-      if (req.session) {
-        /**
-         * Load session auth code
-         */
-        const authCode = await OauthAuthCode.findById(
-          req.session.oauthAuthCodeId
-        );
+      /**
+       * Load session auth code
+       */
+      const authCode = await OauthAuthCode.findById(
+        req.session.oauthAuthCodeId
+      );
 
+      // strategy exists
+      if (strategy) {
         // auth code exist
         if (authCode) {
           /**
@@ -105,21 +106,22 @@ class StrategyController extends OauthController {
           } as any);
         }
       } else {
-        throw Error("No session defined. Express session required.");
+        return OauthHelper.throwError(
+          req,
+          res,
+          Obj.merge(
+            req.query,
+            {
+              error: "access_denied",
+              error_description: `Oauth v2 strategy ${req.params.identifier} not found.`,
+            },
+            "left"
+          ),
+          authCode?.redirectUri
+        );
       }
     } else {
-      return OauthHelper.throwError(
-        req,
-        res,
-        Obj.merge(
-          req.query,
-          {
-            error: "access_denied",
-            error_description: `Oauth v2 strategy ${req.params.identifier} not found.`,
-          },
-          "left"
-        )
-      );
+      throw Error("No session defined. Express session required.");
     }
   };
 
@@ -129,21 +131,23 @@ class StrategyController extends OauthController {
    * @param res response
    */
   authorize = async (req: Request, res: Response) => {
-    // load strategy
-    const strategy = this.oauthContext.strategies.find(
-      (s) => s.options.identifier === req.params.identifier
-    );
+    // session exists
 
-    // strategy exists
-    if (strategy) {
-      if (req.session) {
-        /**
-         * Load session auth code
-         */
-        const authCode = await OauthAuthCode.findById(
-          req.session.oauthAuthCodeId
-        );
+    if (req.session) {
+      // load strategy
+      const strategy = this.oauthContext.strategies.find(
+        (s) => s.options.identifier === req.params.identifier
+      );
 
+      /**
+       * Load session auth code
+       */
+      const authCode = await OauthAuthCode.findById(
+        req.session.oauthAuthCodeId
+      );
+
+      // strategy exists
+      if (strategy) {
         // auth code exist
         if (authCode) {
           switch (strategy.options.grant) {
@@ -185,21 +189,22 @@ class StrategyController extends OauthController {
           }
         }
       } else {
-        throw Error("No session defined. Express session required.");
+        return OauthHelper.throwError(
+          req,
+          res,
+          Obj.merge(
+            req.query,
+            {
+              error: "access_denied",
+              error_description: `Oauth v2 strategy ${req.params.identifier} not found.`,
+            },
+            "left"
+          ),
+          authCode?.redirectUri
+        );
       }
     } else {
-      return OauthHelper.throwError(
-        req,
-        res,
-        Obj.merge(
-          req.query,
-          {
-            error: "access_denied",
-            error_description: `Oauth v2 strategy ${req.params.identifier} not found.`,
-          },
-          "left"
-        )
-      );
+      throw Error("No session defined. Express session required.");
     }
   };
 
@@ -214,15 +219,15 @@ class StrategyController extends OauthController {
       (s) => s.options.identifier === req.params.identifier
     );
 
+    /**
+     * Load auth code
+     */
+    const authCode = await OauthAuthCode.findOne({
+      strategyState: req.query.state as any,
+    });
+
     // strategy exits
     if (strategy) {
-      /**
-       * Load auth code
-       */
-      const authCode = await OauthAuthCode.findOne({
-        strategyState: req.query.state as any,
-      });
-
       // auth code exist
       if (authCode) {
         /**
@@ -322,7 +327,8 @@ class StrategyController extends OauthController {
             error_description: `Oauth v2 strategy ${req.params.identifier} not found.`,
           },
           "left"
-        )
+        ),
+        authCode?.redirectUri
       );
     }
   };
@@ -369,7 +375,7 @@ class StrategyController extends OauthController {
         redirect_uri: authCode.redirectUri,
         state: authCode.state,
         code_challenge_method: authCode.codeChallengeMethod,
-        code_challenge: authCode.codeChallenge
+        code_challenge: authCode.codeChallenge,
       };
 
       return res.redirect(
