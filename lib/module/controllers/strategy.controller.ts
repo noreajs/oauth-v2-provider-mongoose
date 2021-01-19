@@ -388,20 +388,36 @@ class StrategyController extends OauthController {
         )
       );
     } else {
-      // add error
-      if (req.session) {
-        req.session.error = {
-          message: `No account is associated with your ${`${
-            strategy.options.providerName ?? strategy.options.identifier
-          }`.toLowerCase()} profile.`,
-        };
-      }
+      // // add error
+      // if (req.session) {
+      //   req.session.error = {
+      //     message: `No account is associated with your ${`${
+      //       strategy.options.providerName ?? strategy.options.identifier
+      //     }`.toLowerCase()} profile.`,
+      //   };
+      // }
 
-      return res.redirect(
-        HttpStatus.TemporaryRedirect,
-        `${UrlHelper.getFullUrl(req)}/${
-          AuthorizationController.OAUTH_DIALOG_PATH
-        }`
+      // return res.redirect(
+      //   HttpStatus.TemporaryRedirect,
+      //   `${UrlHelper.getFullUrl(req)}/${
+      //     AuthorizationController.OAUTH_DIALOG_PATH
+      //   }`
+      // );
+
+      return OauthHelper.throwError(
+        req,
+        res,
+        Obj.merge(
+          req.query,
+          {
+            error: "access_denied",
+            error_description: `No account is associated with your ${`${
+              strategy.options.providerName ?? strategy.options.identifier
+            }`.toLowerCase()} profile.`,
+          },
+          "left"
+        ),
+        authCode?.redirectUri
       );
     }
   }
