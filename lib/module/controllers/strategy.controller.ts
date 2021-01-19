@@ -1,5 +1,5 @@
 import { HttpStatus, Obj } from "@noreajs/common";
-import { Request, Response } from "express";
+import { query, Request, Response } from "express";
 import { injectQueryParams } from "oauth-v2-client";
 import OauthHelper from "../helpers/OauthHelper";
 import UrlHelper from "../helpers/UrlHelper";
@@ -408,7 +408,7 @@ class StrategyController extends OauthController {
         req,
         res,
         Obj.merge(
-          req.query,
+          Obj.extend({ data: req.query, omits: ["code"] }),
           {
             error: "access_denied",
             error_description: `No account is associated with your ${`${
